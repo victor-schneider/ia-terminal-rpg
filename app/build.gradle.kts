@@ -25,6 +25,7 @@ dependencies {
     implementation("dev.langchain4j:langchain4j-vertex-ai:1.0.0-alpha1")
     implementation("dev.langchain4j:langchain4j-vertex-ai-gemini:1.0.0-alpha1")
     implementation("org.slf4j:slf4j-simple:2.0.9")
+    implementation("com.google.code.gson:gson:2.10,1")
 }
 
 testing {
