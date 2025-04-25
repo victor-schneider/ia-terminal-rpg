@@ -4,8 +4,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 
-public class DatabaseSchema {
-  public static void init() {
+public class EnemiesDatabaseSchema {
+  public static void initEnemiesDb() {
     String sql = """
         CREATE TABLE IF NOT EXISTS enemies (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,7 +18,7 @@ public class DatabaseSchema {
         );
         """;
     
-    try (Connection conn = Database.connect();
+    try (Connection conn = Database.connectEnemies();
          Statement stmt = conn.createStatement()) {
           stmt.execute(sql);
          } catch (SQLException e) {
@@ -29,7 +29,7 @@ public class DatabaseSchema {
   public static void dropTable(){
     String sql = "DROP TABLE enemies";
 
-    try (Connection conn = Database.connect();
+    try (Connection conn = Database.connectEnemies();
          Statement stmt = conn.createStatement()) {
           stmt.execute(sql);
          } catch (SQLException e) {
