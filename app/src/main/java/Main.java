@@ -9,7 +9,7 @@ import Repository.EnemyRepo;
 public class Main {
     public static void main(String[] args) {
     DatabaseSchema.init();
-    // EnemyRepo.createEnemy("Elf", 30, 50);
+    EnemyRepo.createEnemy("Elf", 30, 50);
     // EnemyRepo.deleteEnemy(2);
     // EnemyRepo.updateEnemy(1, null, 15, 10);
     // EnemyRepo.getEnemy(1);

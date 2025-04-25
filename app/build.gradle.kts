@@ -1,7 +1,6 @@
 import org.gradle.api.tasks.JavaExec
 
 tasks.named<JavaExec>("run") {
-    // Liga o stdin do terminal ao processo Java
     standardInput = System.`in`
 }
 
