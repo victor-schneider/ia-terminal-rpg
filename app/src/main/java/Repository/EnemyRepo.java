@@ -1,23 +1,40 @@
 package Repository;
 
-import Migration.Database; // Import the Database class
+import Migration.Database;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class EnemyRepo {
-  public static void createEnemy(String name, int hp, int atk) {
-    String sql= "INSERT INTO enemies(name, hp, atk) VALUES(?, ?, ?)";
+  public static int createEnemy(String name, int level, String weapon, int hp, int atk, int def) {
+    String sql= "INSERT INTO enemies(name, level, weapon, hp, atk, def) VALUES(?, ?, ?, ?, ?, ?)";
 
     try (Connection conn = Database.connect();
-         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+         PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
           pstmt.setString(1, name);
-          pstmt.setInt(2, hp);
-          pstmt.setInt(3, atk);
+          pstmt.setInt(2, level);
+          pstmt.setString(3, weapon);
+          pstmt.setInt(4, hp);
+          pstmt.setInt(5, atk);
+          pstmt.setInt(6, def);
+          
+          
           pstmt.executeUpdate();
+
+          try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+              return generatedKeys.getInt(1);
+            } else {
+              throw new SQLException("Creating Enemy failed, no ID obtained");
+            }
+          }
     } catch (SQLException e) {
       System.err.println("Error inserting enemy: " + e.getMessage());
     }
+    
+    return -1;
+    
   }
 
   public static void getEnemy(int id) {
