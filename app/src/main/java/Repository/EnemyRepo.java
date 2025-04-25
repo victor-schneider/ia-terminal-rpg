@@ -30,7 +30,7 @@ public class EnemyRepo {
             }
           }
     } catch (SQLException e) {
-      System.err.println("Error inserting enemy: " + e.getMessage());
+      System.err.println("Error creating enemy: " + e.getMessage());
     }
     
     return -1;
@@ -46,11 +46,14 @@ public class EnemyRepo {
 
           try (var rs = pstmt.executeQuery()) {
             if(rs.next()){
-              System.out.printf("#%d %s (HP=%d, ATK=%d)%n",
+              System.out.printf("#%d %s %n Level: %d - %n Arma: %s %n Status: [HP:%d, ATK:%d, DEF:%d]%n",
               rs.getInt("id"),
               rs.getString("name"),
+              rs.getInt("level"),
+              rs.getString("weapon"),
               rs.getInt("hp"),
-              rs.getInt("atk"));
+              rs.getInt("atk"),
+              rs.getInt("def"));
             } else {
               System.out.println("Nenhum inimigo encontrado com ID " + id);
             }

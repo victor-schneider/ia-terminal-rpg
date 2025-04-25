@@ -1,17 +1,18 @@
 package Components;
 
 public class Personagem {
-  String name;
-  String weapon;
-  int level;
-  int hp;
+  protected String name;
+  protected int level;
+  protected int hp;
+
+  public Personagem(String name, int level, int hp){
+    this.name = name;
+    this.level = level;
+    this.hp = hp;
+  }
 
   public String getName() {
     return name;
-  }
-
-  public String getWeapon() {
-    return weapon;
   }
 
   public int getLevel() {

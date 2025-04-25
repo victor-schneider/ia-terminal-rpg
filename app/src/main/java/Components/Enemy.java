@@ -1,17 +1,20 @@
 package Components;
 
 public class Enemy extends Personagem {
+  String weapon;
   int atk;
   int def;
 
   public Enemy(String name, int level, int hp, int atk, int def, String weapon) {
-    super.name = name;
-    super.level = level;
-    super.weapon = weapon;
-    super.hp = hp;
+    super(name, level, hp);
+    this.weapon = weapon;
     this.atk = atk;
     this.def = def;
   }
+
+public String getWeapon(){
+  return weapon;
+}
 
   public int getAtk() {
     return atk;
