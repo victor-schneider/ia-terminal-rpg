@@ -39,7 +39,6 @@ public class EnemyCreation {
 
     Map<String, Object> variables = new HashMap<>();
 
-
     Prompt prompt = promptTemplate.apply(variables);
 
     Response<AiMessage> response = model.generate(prompt.toUserMessage());

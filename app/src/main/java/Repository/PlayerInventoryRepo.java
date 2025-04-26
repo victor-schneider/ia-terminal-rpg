@@ -56,12 +56,12 @@ public class PlayerInventoryRepo {
   }
 
   public static void listItems() {
-    String sql = "SELECT * FROM playerIventory";
+    String sql = "SELECT * FROM playerInventory";
 
     try (Connection conn = Database.connectPlayerInventory();
          var stmt = conn.createStatement();
          var rs = stmt.executeQuery(sql)){
-          if(rs.next()) {
+          while (rs.next()) {
             System.out.printf("#%d %n Nome: %s %n Tipo: %s %n ATK: %d DEF:%d%n",
             rs.getInt("id"),
             rs.getString("name"),
@@ -75,10 +75,30 @@ public class PlayerInventoryRepo {
   }
 
   public static void updateItem(int id, String name, String type, int atk, int def){
+    String sql = "UPDATE playerInventory SET name = ?, type = ?, atk = ?, def = ? WHERE id = ?";
 
+    try (Connection conn = Database.connectPlayerInventory();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+          pstmt.setString(1, name);
+          pstmt.setString(2, type);
+          pstmt.setInt(3, atk);
+          pstmt.setInt(4, def);
+          pstmt.setInt(5, id);
+          pstmt.executeUpdate();
+         } catch (SQLException e) {
+          System.err.println("Erro ao atualizar item: " + e.getMessage());
+         }
   }
 
   public static void deleteItem(int id){
+    String sql = "DELETE FROM playerInventory WHERE id = ?";
 
+    try (Connection conn = Database.connectPlayerInventory();
+         var pstmt = conn.prepareStatement(sql)) {
+          pstmt.setInt(1, id);
+          pstmt.executeUpdate();
+         } catch (SQLException e) {
+          System.err.println("Erro ao deletar item: " + e.getMessage());
+         }
   }
 }

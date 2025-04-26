@@ -12,7 +12,7 @@ public class PlayerInventoryDatabaseSchema {
           name STRING NOT NULL,
           type STRING NOT NULL,
           atk INTEGER,
-          def INTEGER,
+          def INTEGER
         );
         """;
     
