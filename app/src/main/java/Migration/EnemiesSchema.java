@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class EnemiesDatabaseSchema {
+public class EnemiesSchema {
   public static void initEnemiesDb() {
     String sql = """
         CREATE TABLE IF NOT EXISTS enemies (
@@ -18,7 +18,7 @@ public class EnemiesDatabaseSchema {
         );
         """;
     
-    try (Connection conn = Database.connectEnemies();
+    try (Connection conn = Database.connect();
          Statement stmt = conn.createStatement()) {
           stmt.execute(sql);
          } catch (SQLException e) {
@@ -29,7 +29,7 @@ public class EnemiesDatabaseSchema {
   public static void dropTable(){
     String sql = "DROP TABLE enemies";
 
-    try (Connection conn = Database.connectEnemies();
+    try (Connection conn = Database.connect();
          Statement stmt = conn.createStatement()) {
           stmt.execute(sql);
          } catch (SQLException e) {

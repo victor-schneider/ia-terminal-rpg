@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class PlayerInventoryDatabaseSchema {
-  public static void initPlayerInventoryDb() {
+public class PlayerInvSchema {
+  public static void initPlayerInvDb() {
     String sql = """
         CREATE TABLE IF NOT EXISTS playerInventory (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -16,7 +16,7 @@ public class PlayerInventoryDatabaseSchema {
         );
         """;
     
-    try (Connection conn = Database.connectPlayerInventory();
+    try (Connection conn = Database.connect();
          Statement stmt = conn.createStatement()) {
           stmt.execute(sql);
          } catch (SQLException e) {
@@ -27,7 +27,7 @@ public class PlayerInventoryDatabaseSchema {
   public static void dropTable(){
     String sql = "DROP TABLE playerInventory";
 
-    try (Connection conn = Database.connectPlayerInventory();
+    try (Connection conn = Database.connect();
        Statement stmt = conn.createStatement()) {
         stmt.execute(sql);
        } catch (SQLException e) {

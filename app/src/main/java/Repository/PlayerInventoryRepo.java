@@ -10,7 +10,7 @@ public class PlayerInventoryRepo {
   public static int createItem(String name, String type, int atk, int def) {
     String sql = "INSERT INTO playerInventory(name, type, atk, def) VALUES(?, ?, ?, ?)";
 
-    try (Connection conn = Database.connectPlayerInventory();
+    try (Connection conn = Database.connect();
          PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
           pstmt.setString(1, name);
           pstmt.setString(2, type);
@@ -34,7 +34,7 @@ public class PlayerInventoryRepo {
   public static void getItem(int id) {
     String sql = "SELECT * FROM playerInventory WHERE id = ?";
 
-    try (Connection conn = Database.connectPlayerInventory();
+    try (Connection conn = Database.connect();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
           pstmt.setInt(1, id);
 
@@ -58,7 +58,7 @@ public class PlayerInventoryRepo {
   public static void listItems() {
     String sql = "SELECT * FROM playerInventory";
 
-    try (Connection conn = Database.connectPlayerInventory();
+    try (Connection conn = Database.connect();
          var stmt = conn.createStatement();
          var rs = stmt.executeQuery(sql)){
           while (rs.next()) {
@@ -77,7 +77,7 @@ public class PlayerInventoryRepo {
   public static void updateItem(int id, String name, String type, int atk, int def){
     String sql = "UPDATE playerInventory SET name = ?, type = ?, atk = ?, def = ? WHERE id = ?";
 
-    try (Connection conn = Database.connectPlayerInventory();
+    try (Connection conn = Database.connect();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
           pstmt.setString(1, name);
           pstmt.setString(2, type);
@@ -93,7 +93,7 @@ public class PlayerInventoryRepo {
   public static void deleteItem(int id){
     String sql = "DELETE FROM playerInventory WHERE id = ?";
 
-    try (Connection conn = Database.connectPlayerInventory();
+    try (Connection conn = Database.connect();
          var pstmt = conn.prepareStatement(sql)) {
           pstmt.setInt(1, id);
           pstmt.executeUpdate();
