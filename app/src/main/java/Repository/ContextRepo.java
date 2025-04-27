@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.ArrayList;
 
 public class ContextRepo {
   public static int createContext(String contexto) {
@@ -16,7 +18,6 @@ public class ContextRepo {
           stmt.setString(1, contexto);
           stmt.executeUpdate();
           conn.commit();
-          System.out.println("Inserido com sucesso!");
 
           try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
             if (generatedKeys.next()) {
@@ -52,20 +53,21 @@ public class ContextRepo {
          }
   }
 
-  public static void listContext() {
+  public static List<String> listContext() {
     String sql = "SELECT * FROM context";
+    List<String> contexto = new ArrayList<>();
 
     try (Connection conn = Database.connect();
          var stmt = conn.createStatement();
          var rs = stmt.executeQuery(sql)) {
           while(rs.next()) {
-            System.out.printf("ID: %d Contexto: %s %n%n",
-            rs.getInt("id"),
-            rs.getString("contexto"));
+            contexto.add(rs.getString("contexto"));
           }
+          return contexto;
          } catch (SQLException e) {
           System.err.println("Erro lendo contexto: " + e.getMessage());
          }
+    return null;
   }
 
   public static void updateContext(int id, String contexto) {
