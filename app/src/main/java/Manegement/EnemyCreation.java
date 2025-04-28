@@ -55,7 +55,7 @@ public class EnemyCreation {
 
     Enemy e = gson.fromJson(wrappedJson, Enemy.class);
 
-    EnemyRepo.createEnemy(e.getName(), e.getLevel(), e.getWeapon(), e.getHp(), e.getAtk(), e.getDef());
+    EnemyRepo.createEnemy(e);
 
     return e;
   }

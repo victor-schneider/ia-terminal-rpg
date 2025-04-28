@@ -8,18 +8,20 @@ import Migration.EnemiesSchema;
 import Migration.PlayerInvSchema;
 import Migration.PlayerSchema;
 import Repository.ContextRepo;
+import Repository.PlayerInvRepo;
 // import Repository.PlayerInventoryRepo;
 import Repository.PlayerRepo;
 import Migration.ContextSchema;
 
-//Importação dos arquivos
+// Importação dos arquivos
 // import Repository.ContextRepo;
 // import Repository.EnemyRepo;
 // import Repository.PlayerInventoryRepo;
 // import Components.Enemy;
-// import Components.PlayerComponents.Armor.Slot;
+import Components.PlayerComponents.Armor.Slot;
 import Components.PlayerComponents.Player;
-// import Components.PlayerComponents.*;
+import Components.PlayerComponents.Weapon;
+import Components.PlayerComponents.*;
 import Components.Context;
 
 import Manegement.EnemyCreation;
@@ -27,11 +29,11 @@ import Manegement.ContextCreation;
 
 public class Main {
     public static void main(String[] args) {
-        // TODO criar o sistema de turnos e configurar o booleano de equipped
+        // TODO criar o sistema de turnos
         
-        // ContextSchema.dropTable();
+        ContextSchema.dropTable();
         // EnemiesSchema.dropTable();
-        // PlayerInvSchema.dropTable();
+        PlayerInvSchema.dropTable();
 
         PlayerSchema.dropTable();
         EnemiesSchema.initEnemiesDb();
@@ -41,6 +43,14 @@ public class Main {
 
         Player player = new Player("Victor", 1, 50, 1, 0, 20);
         PlayerRepo.createPlayer(player);
+
+        Armor helmet = new Armor("Capcete de ferro", Slot.HELMET, 10, 0, false, "ARMOR");
+        PlayerInvRepo.createArmor(helmet);
+        player.equipArmor(helmet);
+
+        Weapon espada = new Weapon(20, "Espada de ferro", false, 1, "WAEPON");
+        PlayerInvRepo.createWeapon(espada);
+        player.equipWeapon(espada);
 
         Context c;
         Boolean finalizar = false;
@@ -69,8 +79,5 @@ public class Main {
         } while (!finalizar);
 
         scanner.close();
-    }
+     }
 }
-
-
-

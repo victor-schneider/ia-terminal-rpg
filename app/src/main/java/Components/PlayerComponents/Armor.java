@@ -5,8 +5,8 @@ public class Armor extends Item{
   public enum Slot { HELMET, CHEST, LEGS, BOOTS }
   private Slot slot;
 
-  public Armor(String name, Slot slot, int def){
-    super(name);
+  public Armor(String name, Slot slot, int def, int id, Boolean equipped, String type){
+    super(name, equipped, id, type);
     this.slot = slot;
     this.def = def;
   }

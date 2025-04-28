@@ -6,18 +6,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import Components.Enemy;
+
 public class EnemyRepo {
-  public static int createEnemy(String name, int level, String weapon, int hp, int atk, int def) {
+  public static int createEnemy(Enemy enemy) {
     String sql= "INSERT INTO enemies(name, level, weapon, hp, atk, def) VALUES(?, ?, ?, ?, ?, ?)";
 
     try (Connection conn = Database.connect();
          PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-          pstmt.setString(1, name);
-          pstmt.setInt(2, level);
-          pstmt.setString(3, weapon);
-          pstmt.setInt(4, hp);
-          pstmt.setInt(5, atk);
-          pstmt.setInt(6, def);
+          pstmt.setString(1, enemy.getName());
+          pstmt.setInt(2, enemy.getLevel());
+          pstmt.setString(3, enemy.getWeapon());
+          pstmt.setInt(4, enemy.getHp());
+          pstmt.setInt(5, enemy.getAtk());
+          pstmt.setInt(6, enemy.getDef());
 
           pstmt.executeUpdate();
 
@@ -81,18 +83,18 @@ public class EnemyRepo {
          }
   }
 
-  public static void updateEnemy(int id, String name, int level, String weapon, int hp, int atk, int def) {
+  public static void updateEnemy(Enemy enemy) {
     String sql = "UPDATE enemies SET name = ?, level = ?, weapon = ?, hp = ?, atk = ?, def = ? WHERE id = ?";
     
     try (Connection conn = Database.connect();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
-          pstmt.setString(1, name);
-          pstmt.setInt(2, level);
-          pstmt.setString(3, weapon);
-          pstmt.setInt(4, hp);
-          pstmt.setInt(5, atk);
-          pstmt.setInt(6, def);
-          pstmt.setInt(7, id);
+          pstmt.setString(1, enemy.getName());
+          pstmt.setInt(2, enemy.getLevel());
+          pstmt.setString(3, enemy.getWeapon());
+          pstmt.setInt(4, enemy.getHp());
+          pstmt.setInt(5, enemy.getAtk());
+          pstmt.setInt(6, enemy.getDef());
+          pstmt.setInt(7, enemy.getId());
           pstmt.executeUpdate();
          } catch (SQLException e) {
           System.err.println("Erro ao atualizar inimigo: " + e.getMessage());

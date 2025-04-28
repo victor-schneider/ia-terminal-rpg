@@ -14,7 +14,7 @@ public class PlayerInvSchema {
           slot STRING,
           atk INTEGER,
           def INTEGER,
-          equipeed BOOLEAN NOT NULL
+          equipped BOOLEAN NOT NULL
         );
         """;
 

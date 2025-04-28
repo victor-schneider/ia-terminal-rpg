@@ -11,30 +11,52 @@ import java.sql.SQLException;
 
 // TODO configura o equipped aqui
 
-public class PlayerInventoryRepo {
-  public static int createItem(String name, String type, String slot,int atk, int def) {
-    String sql = "INSERT INTO playerInventory(name, type, slot, atk, def) VALUES(?, ?, ?, ?, ?)";
+public class PlayerInvRepo {
+  public static void createWeapon(Weapon weapon) {
+    String sql = "INSERT INTO playerInventory(atk, name, equipped, type) VALUES(?, ?, ?, ?)";
 
     try (Connection conn = Database.connect();
          PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-          pstmt.setString(1, name);
-          pstmt.setString(2, type);
-          pstmt.setString(3, slot);
-          pstmt.setInt(4, atk);
-          pstmt.setInt(5, def);
+          pstmt.setInt(1, weapon.getAtk());
+          pstmt.setString(2, weapon.getName());
+          pstmt.setBoolean(3, weapon.getEquipped());
+          pstmt.setString(4, weapon.getType());
           pstmt.executeUpdate();
 
           try (ResultSet generatedKey = pstmt.getGeneratedKeys()) {
-            if (generatedKey.next()){
-              return generatedKey.getInt(1);
+            if( generatedKey.next() ) {
+              weapon.setId(generatedKey.getInt(1));
             } else {
-              throw new SQLException("Creating Item failed, no ID obtained");
+              throw new SQLException("Creating weapon failed, no ID obtained");
             }
           }
          } catch (SQLException e) {
-          System.err.println("Erro ao inserir item: " + e.getMessage());
+          System.err.println("Erro ao criar arma: " + e.getMessage());
          }
-    return 1;
+  }
+
+  public static void createArmor (Armor armor) {
+    String sql = "INSERT INTO playerInventory(name, slot, def, equipped, type) VALUES(?, ?, ?, ?, ?)";
+
+    try (Connection conn = Database.connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+          pstmt.setString(1, armor.getName());
+          pstmt.setString(2, armor.getSlot().name());
+          pstmt.setInt(3, armor.getDef());
+          pstmt.setBoolean(4, armor.getEquipped());
+          pstmt.setString(5, armor.getType());
+          pstmt.executeUpdate();
+
+          try (ResultSet generatedKey = pstmt.getGeneratedKeys()) {
+            if( generatedKey.next() ) {
+              armor.setId(generatedKey.getInt(1));
+            } else {
+              throw new SQLException("Creating armor failed, no ID obtained");
+            }
+          }
+         } catch (SQLException e) {
+          System.err.println("Erro ao criar armadura: " + e.getMessage());
+         }
   }
 
   public static Armor getArmor(int id) {
@@ -51,7 +73,10 @@ public class PlayerInventoryRepo {
                   Armor helmet = new Armor(
                     rs.getString("name"),
                     Slot.HELMET,
-                    rs.getInt("def")
+                    rs.getInt("def"),
+                    rs.getInt("id"),
+                    rs.getBoolean("equipped"),
+                    rs.getString("type")
                   );
                   return helmet;
 
@@ -59,7 +84,10 @@ public class PlayerInventoryRepo {
                   Armor chest = new Armor(
                   rs.getString("name"),
                   Slot.CHEST,
-                  rs.getInt("def")
+                  rs.getInt("def"),
+                  rs.getInt("id"),
+                  rs.getBoolean("equipped"),
+                  rs.getString("type")
                  );
                  return chest;
 
@@ -67,7 +95,10 @@ public class PlayerInventoryRepo {
                 Armor legs = new Armor(
                   rs.getString("name"),
                   Slot.LEGS,
-                  rs.getInt("def")
+                  rs.getInt("def"),
+                  rs.getInt("id"),
+                  rs.getBoolean("equipped"),
+                  rs.getString("type")
                 );
                 return legs;
 
@@ -75,7 +106,10 @@ public class PlayerInventoryRepo {
                 Armor boots = new Armor(
                 rs.getString("name"),
                 Slot.BOOTS,
-                rs.getInt("def")
+                rs.getInt("def"),
+                rs.getInt("id"),
+                rs.getBoolean("equipped"),
+                rs.getString("type")
                );
                return boots;
 
@@ -101,7 +135,10 @@ public class PlayerInventoryRepo {
             if(rs.next()) {
               Weapon weapon = new Weapon(
                 rs.getInt("atk"),
-                rs.getString("name")
+                rs.getString("name"),
+                rs.getBoolean("equipped"),
+                rs.getInt("id"),
+                rs.getString("type")
               );
               return weapon;
             } else {
@@ -133,19 +170,34 @@ public class PlayerInventoryRepo {
          }
   }
 
-  public static void updateItem(int id, String name, String type, int atk, int def){
-    String sql = "UPDATE playerInventory SET name = ?, type = ?, atk = ?, def = ? WHERE id = ?";
+  public static void updateWeapon(Weapon weapon){
+    String sql = "UPDATE playerInventory SET atk = ?, name = ?, equipped = ? WHERE id = ?";
 
     try (Connection conn = Database.connect();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
-          pstmt.setString(1, name);
-          pstmt.setString(2, type);
-          pstmt.setInt(3, atk);
-          pstmt.setInt(4, def);
-          pstmt.setInt(5, id);
+          pstmt.setInt(1, weapon.getAtk());
+          pstmt.setString(2, weapon.getName());
+          pstmt.setBoolean(3, weapon.getEquipped());
+          pstmt.setInt(4, weapon.getId());
           pstmt.executeUpdate();
          } catch (SQLException e) {
-          System.err.println("Erro ao atualizar item: " + e.getMessage());
+          System.err.println("Erro ao atualizar arma: " + e.getMessage());
+         }
+  }
+
+  public static void updateArmor(Armor armor){
+    String sql = "UPDATE playerInventory SET name = ?, slot = ?, def = ?, equipped = ? WHERE id = ?";
+
+    try (Connection conn = Database.connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+          pstmt.setString(1, armor.getName());
+          pstmt.setString(2, armor.getSlot().name());
+          pstmt.setInt(3, armor.getDef());
+          pstmt.setBoolean(4, armor.getEquipped());
+          pstmt.setInt(5, armor.getId());
+          pstmt.executeUpdate();
+         } catch (SQLException e) {
+          System.err.println("Erro ao atualizar armadura: " + e.getMessage());
          }
   }
 
