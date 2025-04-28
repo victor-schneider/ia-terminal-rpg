@@ -11,16 +11,20 @@ public class PlayerInvSchema {
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name STRING NOT NULL,
           type STRING NOT NULL,
+          slot STRING,
           atk INTEGER,
-          def INTEGER
+          def INTEGER,
+          equipeed BOOLEAN NOT NULL
         );
         """;
+
+    // TODO configurar o resto desse equipped
     
     try (Connection conn = Database.connect();
          Statement stmt = conn.createStatement()) {
           stmt.execute(sql);
          } catch (SQLException e) {
-          System.err.println("Erro criando tabela: " + e.getMessage());
+          System.err.println("Erro criando tabela playerInventory: " + e.getMessage());
          }
   }
 

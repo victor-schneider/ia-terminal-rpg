@@ -1,13 +1,15 @@
-// import dev.langchain4j.model.vertexai.VertexAiGeminiChatModel;
-// import dev.langchain4j.model.chat.ChatLanguageModel;
-
 import java.util.Scanner;
+// import java.util.List;
+// import java.util.ArrayList;
 // import com.google.gson.Gson;
 
 // Importação dos Schemas do DB
 import Migration.EnemiesSchema;
 import Migration.PlayerInvSchema;
+import Migration.PlayerSchema;
 import Repository.ContextRepo;
+// import Repository.PlayerInventoryRepo;
+import Repository.PlayerRepo;
 import Migration.ContextSchema;
 
 //Importação dos arquivos
@@ -16,16 +18,29 @@ import Migration.ContextSchema;
 // import Repository.PlayerInventoryRepo;
 // import Components.Enemy;
 // import Components.PlayerComponents.Armor.Slot;
+import Components.PlayerComponents.Player;
+// import Components.PlayerComponents.*;
 import Components.Context;
-// import Manegement.EnemyCreation;
+
+import Manegement.EnemyCreation;
 import Manegement.ContextCreation;
 
 public class Main {
     public static void main(String[] args) {
-        ContextSchema.dropContext();
+        // TODO criar o sistema de turnos e configurar o booleano de equipped
+        
+        // ContextSchema.dropTable();
+        // EnemiesSchema.dropTable();
+        // PlayerInvSchema.dropTable();
+
+        PlayerSchema.dropTable();
         EnemiesSchema.initEnemiesDb();
         PlayerInvSchema.initPlayerInvDb();
+        PlayerSchema.initPlayer();
         ContextSchema.initContextDb();
+
+        Player player = new Player("Victor", 1, 50, 1, 0, 20);
+        PlayerRepo.createPlayer(player);
 
         Context c;
         Boolean finalizar = false;
@@ -41,6 +56,10 @@ public class Main {
             }
             System.out.println("4 - Finalizar jogo? " + "\n");
             resposta = scanner.nextInt();
+
+            if(c.getCombate()) {                
+                EnemyCreation.main(player, c.getDescription());
+            }
 
             if(resposta == 4) {
                 finalizar = true;

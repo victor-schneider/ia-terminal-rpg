@@ -9,10 +9,13 @@ import Components.PlayerComponents.Armor.Slot;
 public class Player extends Personagem {
   private Weapon equippedWeapon;
   private Map<Slot, Armor> equippedArmor;
-  private String name;
+  private int exp;
+  private int nextLevel;
   
-  public Player(String name, int hp, int level){
-    super(name, level, hp);
+  public Player(String name, int level, int hp, int id, int exp, int nextLevel ){
+    super(name, level, hp, id);
+    this.exp = exp;
+    this.nextLevel = nextLevel;
     this.equippedArmor = new EnumMap<>(Slot.class);
   }
 
@@ -42,8 +45,25 @@ public class Player extends Personagem {
     return totalDefense;
   }
 
-  public String getName() {
-    return name;
+  public int getAttack() {
+    int attack = 0;
+    attack += equippedWeapon.getAtk();
+    return attack;
   }
 
+  public int getExp() {
+    return exp;
+  }
+
+  public void setExp(int exp) {
+    this.exp = exp;
+  }
+
+  public int getNextLevel() {
+    return nextLevel;
+  }
+
+  public void setNextLevel(int nextLevel) {
+    this.nextLevel = nextLevel;
+  }
 }

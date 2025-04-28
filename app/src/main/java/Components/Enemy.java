@@ -5,8 +5,8 @@ public class Enemy extends Personagem {
   int atk;
   int def;
 
-  public Enemy(String name, int level, int hp, int atk, int def, String weapon) {
-    super(name, level, hp);
+  public Enemy(String name, int level, int hp, int id, int atk, int def, String weapon) {
+    super(name, level, hp, id);
     this.weapon = weapon;
     this.atk = atk;
     this.def = def;

@@ -21,7 +21,7 @@ public class ContextSchema {
          }
   }
 
-  public static void dropContext() {
+  public static void dropTable() {
     String sql = "DROP TABLE context";
 
    try (Connection conn = Database.connect();
