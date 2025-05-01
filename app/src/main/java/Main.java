@@ -77,7 +77,6 @@ public class Main {
             genNumbers[i] = -1;
         }
 
-
         do {
             contexto = ContextCreation.main();
             System.out.println(contexto.getDescription() + "\n");
@@ -91,8 +90,6 @@ public class Main {
             if(contexto.getCombate() && resposta == 1) {
                 Enemy enemy = EnemyCreation.main(player, contexto.getDescription());
                 float enemyAtk = enemy.getAtk();
-
-                
 
                 System.out.println("Combate!\n\n");
                 enemy.getEnemyStatus(enemy);
