@@ -3,3 +3,12 @@
 
 # Ignore Gradle build output directory
 build
+
+# Ignore arquivos compilados Java
+*.class
+
+# Ignore pastas de compilação comuns
+/bin/
+/build/
+/out/
+/target/
