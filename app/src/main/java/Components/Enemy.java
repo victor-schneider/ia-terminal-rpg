@@ -23,4 +23,8 @@ public String getWeapon(){
   public int getDef() {
     return def;
   }
+
+  public void getEnemyStatus(Enemy enemy) {
+    System.out.println("Inimigo: " + enemy.getName() + "\nLevel: " + enemy.getLevel() + "\nArma: " + enemy.getWeapon() + "\nHP: " + enemy.getHp() + "\nATK: " + enemy.getAtk() + "\nDEF: " + enemy.getDef());
+  }
 }

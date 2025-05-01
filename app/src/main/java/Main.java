@@ -8,6 +8,7 @@ import Migration.EnemiesSchema;
 import Migration.PlayerInvSchema;
 import Migration.PlayerSchema;
 import Repository.ContextRepo;
+import Repository.EnemyRepo;
 import Repository.PlayerInvRepo;
 // import Repository.PlayerInventoryRepo;
 import Repository.PlayerRepo;
@@ -17,7 +18,7 @@ import Migration.ContextSchema;
 // import Repository.ContextRepo;
 // import Repository.EnemyRepo;
 // import Repository.PlayerInventoryRepo;
-// import Components.Enemy;
+import Components.Enemy;
 import Components.PlayerComponents.Armor.Slot;
 import Components.PlayerComponents.Player;
 import Components.PlayerComponents.Weapon;
@@ -32,7 +33,7 @@ public class Main {
         // TODO criar o sistema de turnos
         
         ContextSchema.dropTable();
-        // EnemiesSchema.dropTable();
+        EnemiesSchema.dropTable();
         PlayerInvSchema.dropTable();
 
         PlayerSchema.dropTable();
@@ -48,33 +49,78 @@ public class Main {
         PlayerInvRepo.createArmor(helmet);
         player.equipArmor(helmet);
 
-        Weapon espada = new Weapon(20, "Espada de ferro", false, 1, "WAEPON");
+        Weapon espada = new Weapon(5, "Espada de ferro", false, 1, "WAEPON");
         PlayerInvRepo.createWeapon(espada);
         player.equipWeapon(espada);
 
-        Context c;
+        Context contexto;
         Boolean finalizar = false;
         Scanner scanner = new Scanner(System.in);
         int resposta = 0;
 
         do {
-            c = ContextCreation.main();
-            System.out.println(c.getDescription() + "\n");
+            contexto = ContextCreation.main();
+            System.out.println(contexto.getDescription() + "\n");
 
-            for(int i = 0; i < c.getOptions().size(); i++){
-                System.out.println("Opção: " + (i + 1) + " " + c.getOptions().get(i) + "\n");
+            for(int i = 0; i < contexto.getOptions().size(); i++){
+                System.out.println("Opção: " + (i + 1) + " " + contexto.getOptions().get(i) + "\n");
             }
             System.out.println("4 - Finalizar jogo? " + "\n");
             resposta = scanner.nextInt();
 
-            if(c.getCombate()) {                
-                EnemyCreation.main(player, c.getDescription());
+            if(contexto.getCombate() && resposta == 1) {
+                Enemy enemy = EnemyCreation.main(player, contexto.getDescription());
+                System.out.println("Combate!\n\n");
+                enemy.getEnemyStatus(enemy);
+
+                while(contexto.getCombate()) {
+                    int opcao = 0;
+
+                    if(enemy.getHp() <= 0) {
+                        System.out.println("O inimigo foi derrotado! Jogador ganhou x de XP");
+                        // TODO adicionar o quanto de xp o jogador vai receber pela morte do inimigo.
+                        // TODO Talvez adicionar na tabela do inimigo o quanto de xp ele vai dropar
+                        ContextRepo.createContext("Inimigo: " + enemy.getName() + " Foi derrotado, combate volta a ser FALSE e continue a historia");
+                        contexto = ContextCreation.main();
+                        contexto.setCombate(false);
+                        break;
+                    }
+
+                    System.out.println("Você decidie: \n[1] - Atacar");
+                    opcao = scanner.nextInt();
+
+                    if(opcao == 1) {
+                        enemy.setHp(enemy.getHp() - player.getAttack());
+                        System.out.println(player.getName() + " Infligiu " + player.getAttack() + " de dano ao " + enemy.getName());
+                        EnemyRepo.updateEnemy(enemy);
+                        System.out.println(enemy.getName() + " HP: " + enemy.getHp() );
+                    }
+
+                    System.out.println("O " + enemy.getName() + " infligiu " + enemy.getAtk() + " de dano ao jogador");
+                    player.setHp(player.getHp() - enemy.getAtk());
+                    PlayerRepo.updatePlayer(player);
+                    if (player.getHp() <= 0) {
+                        System.out.println("Voce perdeu, ruim demais");
+                        contexto.setCombate(false);
+                        ContextRepo.createContext("Jogador: " + player.getName() + " Foi derrotado, finalize a história demonstrando como o jogador morreu para o inimigo: " + enemy.getName() + " que possuia a arma: " + enemy.getWeapon());
+                        
+                        contexto = ContextCreation.main();
+
+                        System.out.println(contexto.getDescription());
+
+                        finalizar = true;
+                        scanner.close();
+                        return;
+                    }
+                    System.out.println(player.getName() + "HP: " + player.getHp());
+                }
             }
 
+            // TODO tentar entender porque a AI ta respondendo a mesma coisa duas vezes e tirar esse systemout do if de derrotado
             if(resposta == 4) {
                 finalizar = true;
-            } else {
-                ContextRepo.createContext(c.getOptions().get(resposta - 1));
+            } else if(!finalizar) {
+                ContextRepo.createContext(contexto.getOptions().get(resposta - 1));
             }
         } while (!finalizar);
 
