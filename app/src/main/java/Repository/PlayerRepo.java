@@ -10,15 +10,19 @@ import java.sql.SQLException;
 
 public class PlayerRepo {
   public static void createPlayer(Player player) {
-    String sql = "INSERT INTO player(name, hp, level, exp, nextLevel) VALUES(?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO player(name, hp, atk, def, dex, lck, level, exp, nextLevel) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     try (Connection conn = Database.connect();
          PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
           pstmt.setString(1, player.getName());
-          pstmt.setInt(2, player.getHp());
-          pstmt.setInt(3, player.getLevel());
-          pstmt.setInt(4, player.getExp());
-          pstmt.setInt(5, player.getNextLevel());
+          pstmt.setFloat(2, player.getHp());
+          pstmt.setFloat(3, player.getAtk());
+          pstmt.setFloat(4, player.getDef());
+          pstmt.setFloat(5, player.getDex());
+          pstmt.setFloat(6, player.getLck());
+          pstmt.setFloat(7, player.getLevel());
+          pstmt.setFloat(8, player.getExp());
+          pstmt.setDouble(9, player.getNextLevel());
           pstmt.executeUpdate();
 
           try (ResultSet generatedKey = pstmt.getGeneratedKeys()) {
@@ -45,11 +49,14 @@ public class PlayerRepo {
               Player player = new Player(
                 rs.getString("name"),
                 rs.getInt("hp"),
+                rs.getInt("atk"),
+                rs.getInt("def"),
+                rs.getInt("dex"),
+                rs.getInt("lck"),
                 rs.getInt("level"),
                 rs.getInt("exp"),
                 rs.getInt("nextLevel"),
                 rs.getInt("id"));
-                System.out.println("Jogador retornado com sucesso!");
 
                 return player;
             } else {
@@ -63,16 +70,20 @@ public class PlayerRepo {
   }
 
   public static void updatePlayer(Player player) {
-    String sql = "UPDATE player SET name = ?, hp = ?, level = ?, exp = ?, nextLevel = ? WHERE id = ?";
+    String sql = "UPDATE player SET name = ?, hp = ?, atk = ?, def = ?, dex = ?, lck = ?, level = ?, exp = ?, nextLevel = ? WHERE id = ?";
 
     try (Connection conn = Database.connect();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
           pstmt.setString(1, player.getName());
-          pstmt.setInt(2, player.getHp());
-          pstmt.setInt(3, player.getLevel());
-          pstmt.setInt(4, player.getExp());
-          pstmt.setInt(5, player.getNextLevel());
-          pstmt.setInt(6, player.getId());
+          pstmt.setFloat(2, player.getHp());
+          pstmt.setFloat(3, player.getAtk());
+          pstmt.setFloat(4, player.getDef());
+          pstmt.setFloat(5, player.getDex());
+          pstmt.setFloat(6, player.getLck());
+          pstmt.setFloat(7, player.getLevel());
+          pstmt.setFloat(8, player.getExp());
+          pstmt.setDouble(9, player.getNextLevel());
+          pstmt.setInt(10, player.getId());
           pstmt.executeUpdate();
 
          } catch (SQLException e) {
