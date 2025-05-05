@@ -10,10 +10,14 @@ public class PlayerSchema {
         CREATE TABLE IF NOT EXISTS player (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name STRING NOT NULL,
-        hp INTEGER NOT NULL,
-        level INTEGER NOT NULL,
-        exp INTEGER NOT NULL,
-        nextLevel INTEGER NOT NULL
+        hp FLOAT NOT NULL,
+        atk FLOAT NOT NULL,
+        def FLOAT NOT NULL,
+        lck FLOAT NOT NULL,
+        dex FLOAT NOT NULL,
+        level FLOAT NOT NULL,
+        exp FLOAT NOT NULL,
+        nextLevel DOUBLE NOT NULL
         );
         """;
         

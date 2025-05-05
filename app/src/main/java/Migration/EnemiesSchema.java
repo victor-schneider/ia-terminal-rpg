@@ -12,9 +12,11 @@ public class EnemiesSchema {
           name STRING NOT NULL,
           level INTEGER NOT NULL,
           weapon STRING NOT NULL,
-          hp INTEGER NOT NULL,
-          atk INTEGER NOT NULL,
-          def INTEGER NOT NULL
+          hp FLOAT NOT NULL,
+          atk FLOAT NOT NULL,
+          def FLOAT NOT NULL,
+          dex FLOAT NOT NULL,
+          exp FLOAT NOT NULL
         );
         """;
     
