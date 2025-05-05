@@ -2,6 +2,7 @@ import java.util.Scanner;
 // import java.util.List;
 // import java.util.ArrayList;
 // import com.google.gson.Gson;
+import java.util.random.RandomGenerator;
 
 // Importação dos Schemas do DB
 import Migration.EnemiesSchema;
@@ -18,10 +19,11 @@ import Migration.ContextSchema;
 // import Repository.ContextRepo;
 // import Repository.EnemyRepo;
 // import Repository.PlayerInventoryRepo;
+
+import Utils.NumberGenerator;
+
 import Components.Enemy;
 import Components.PlayerComponents.Armor.Slot;
-import Components.PlayerComponents.Player;
-import Components.PlayerComponents.Weapon;
 import Components.PlayerComponents.*;
 import Components.Context;
 
@@ -29,8 +31,15 @@ import Manegement.EnemyCreation;
 import Manegement.ContextCreation;
 
 public class Main {
-    public static void main(String[] args) {
-        // TODO criar o sistema de turnos
+    public static void main(String[] args){ 
+
+        /// Botar tudo para duas casas decimais - format duas casas
+        /// Criar a opção de acessar invetário
+        /// Equipar desequipar armas e armaduras no iventário
+        /// Fazer a possibilidade de fugir de um combate
+        /// Fazer a IA gerar estruturas ou eventos que forneçam items ao jogador
+        /// Criar entrada do JSON para aceitar itens caso seja verdadeiro
+        /// Adicionar a lógia de entrada de items ao inventário
         
         ContextSchema.dropTable();
         EnemiesSchema.dropTable();
@@ -42,7 +51,9 @@ public class Main {
         PlayerSchema.initPlayer();
         ContextSchema.initContextDb();
 
-        Player player = new Player("Victor", 1, 50, 1, 0, 20);
+
+        
+        Player player = new Player("Victor", 100, 5, 2, 5, 5, 1, 0, 20, 1);
         PlayerRepo.createPlayer(player);
 
         Armor helmet = new Armor("Capcete de ferro", Slot.HELMET, 10, 0, false, "ARMOR");
@@ -58,6 +69,15 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         int resposta = 0;
 
+
+        int crit;
+        float atk = player.getAttack();
+        int[] genNumbers = new int[100];
+        for(int i = 0; i < genNumbers.length; i++) {
+            genNumbers[i] = -1;
+        }
+
+
         do {
             contexto = ContextCreation.main();
             System.out.println(contexto.getDescription() + "\n");
@@ -70,35 +90,78 @@ public class Main {
 
             if(contexto.getCombate() && resposta == 1) {
                 Enemy enemy = EnemyCreation.main(player, contexto.getDescription());
+                float enemyAtk = enemy.getAtk();
+
+                
+
                 System.out.println("Combate!\n\n");
                 enemy.getEnemyStatus(enemy);
 
                 while(contexto.getCombate()) {
                     int opcao = 0;
+                    int rng = NumberGenerator.main(100);
 
-                    if(enemy.getHp() <= 0) {
-                        System.out.println("O inimigo foi derrotado! Jogador ganhou x de XP");
-                        // TODO adicionar o quanto de xp o jogador vai receber pela morte do inimigo.
-                        // TODO Talvez adicionar na tabela do inimigo o quanto de xp ele vai dropar
-                        ContextRepo.createContext("Inimigo: " + enemy.getName() + " Foi derrotado, combate volta a ser FALSE e continue a historia");
-                        contexto = ContextCreation.main();
-                        contexto.setCombate(false);
-                        break;
+                    for(int i = 0; i < genNumbers.length; i++) {
+                        genNumbers[i] = -1;
                     }
 
-                    System.out.println("Você decidie: \n[1] - Atacar");
+                    
+
+                    System.out.println("Você decide: \n[1] - Atacar");
                     opcao = scanner.nextInt();
 
                     if(opcao == 1) {
-                        enemy.setHp(enemy.getHp() - player.getAttack());
-                        System.out.println(player.getName() + " Infligiu " + player.getAttack() + " de dano ao " + enemy.getName());
-                        EnemyRepo.updateEnemy(enemy);
-                        System.out.println(enemy.getName() + " HP: " + enemy.getHp() );
+                        atk = player.getAtk();
+                        if(NumberGenerator.numberVerifier(rng, genNumbers, player.getLck() + 10)) {
+                            atk *= 2;
+                            System.out.println("Dano critico!\n");
+                        }
+                        if (atk == player.getAtk()){
+                            atk -= ((atk * enemy.getDef()) / 100);
+                        }
+
+                        if(NumberGenerator.numberVerifier(rng, genNumbers, enemy.getDex())) {
+                            System.out.println("O inimigo desviou do ataque!");
+                        } else {
+                            enemy.setHp(enemy.getHp() - atk);
+                            System.out.println(player.getName() + " Infligiu " + atk + " de dano ao " + enemy.getName());
+                            EnemyRepo.updateEnemy(enemy);
+                            System.out.println(enemy.getName() + " HP: " + enemy.getHp() );
+                        }
                     }
 
-                    System.out.println("O " + enemy.getName() + " infligiu " + enemy.getAtk() + " de dano ao jogador");
-                    player.setHp(player.getHp() - enemy.getAtk());
-                    PlayerRepo.updatePlayer(player);
+                    if (enemyAtk == enemy.getAtk()) {
+                        enemyAtk -= ((enemyAtk * player.getTotalDefense()) / 100);
+                    }
+                    for(int i = 0; i < genNumbers.length; i++) {
+                        genNumbers[i] = -1;
+                    }
+
+                    if(NumberGenerator.numberVerifier(rng, genNumbers, player.getDex())) {
+                        System.out.println("O jogador desviou do ataque!");
+
+                    } else if(enemy.getHp() <= 0) {
+                        System.out.println("O inimigo foi derrotado! Jogador ganhou: " + enemy.getExp() + " de XP\n");
+                        player.setExp(enemy.getExp());
+                        if(player.getExp() > player.getLevel()) {
+                            player.setLevel(player.getLevel() + 1);
+                            player.setExp(0);
+                            System.out.println(player.getName() + " Subiu para o nível: " + player.getLevel() + "!\n");
+                            
+                            player.setNextLevel(player.getNextLevel() * 1.2);
+                            
+                            PlayerRepo.updatePlayer(player);
+                        }
+
+                        ContextRepo.createContext("Inimigo: " + enemy.getName() + " Foi derrotado, combate volta a ser FALSE e continue a historia contando como o inimigo morreu e qual é a próxima decisão do jogador");
+                        contexto = ContextCreation.main();
+                        contexto.setCombate(false);
+                        break;
+                    } else { System.out.println("O " + enemy.getName() + "  infligiu " + enemyAtk + " de dano ao jogador");
+                        player.setHp(player.getHp() - enemyAtk);
+                        PlayerRepo.updatePlayer(player);
+                    }
+
                     if (player.getHp() <= 0) {
                         System.out.println("Voce perdeu, ruim demais");
                         contexto.setCombate(false);
@@ -116,7 +179,6 @@ public class Main {
                 }
             }
 
-            // TODO tentar entender porque a AI ta respondendo a mesma coisa duas vezes e tirar esse systemout do if de derrotado
             if(resposta == 4) {
                 finalizar = true;
             } else if(!finalizar) {
@@ -124,6 +186,8 @@ public class Main {
             }
         } while (!finalizar);
 
-        scanner.close();
-     }
+     scanner.close();
+
+    }
 }
+

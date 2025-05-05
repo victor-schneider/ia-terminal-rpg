@@ -10,16 +10,18 @@ import Components.Enemy;
 
 public class EnemyRepo {
   public static int createEnemy(Enemy enemy) {
-    String sql= "INSERT INTO enemies(name, level, weapon, hp, atk, def) VALUES(?, ?, ?, ?, ?, ?)";
+    String sql= "INSERT INTO enemies(name, level, weapon, hp, atk, def, dex, exp) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
 
     try (Connection conn = Database.connect();
          PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
           pstmt.setString(1, enemy.getName());
           pstmt.setInt(2, enemy.getLevel());
           pstmt.setString(3, enemy.getWeapon());
-          pstmt.setInt(4, enemy.getHp());
-          pstmt.setInt(5, enemy.getAtk());
-          pstmt.setInt(6, enemy.getDef());
+          pstmt.setFloat(4, enemy.getHp());
+          pstmt.setFloat(5, enemy.getAtk());
+          pstmt.setFloat(6, enemy.getDef());
+          pstmt.setFloat(7, enemy.getDex());
+          pstmt.setFloat(8, enemy.getExp());
 
           pstmt.executeUpdate();
 
@@ -45,14 +47,15 @@ public class EnemyRepo {
 
           try (var rs = pstmt.executeQuery()) {
             if(rs.next()){
-              System.out.printf("#%d %s %n Level: %d - %n Arma: %s %n Status: [HP:%d, ATK:%d, DEF:%d]%n",
+              System.out.printf("#%d %s %n Level: %d - %n Arma: %s %n Status: [HP:%d, ATK:%d, DEF:%d, DEX:%d]%n",
               rs.getInt("id"),
               rs.getString("name"),
               rs.getInt("level"),
               rs.getString("weapon"),
-              rs.getInt("hp"),
-              rs.getInt("atk"),
-              rs.getInt("def"));
+              rs.getFloat("hp"),
+              rs.getFloat("atk"),
+              rs.getFloat("def"),
+              rs.getFloat("dex"));
             } else {
               System.out.println("Nenhum inimigo encontrado com ID " + id);
             }
@@ -69,14 +72,15 @@ public class EnemyRepo {
          var stmt = conn.createStatement();
          var rs = stmt.executeQuery(sql)) {
            while(rs.next()) {
-            System.out.printf("#%d %s %n Level: %d - %n Arma: %s %n Status: [HP:%d, ATK:%d, DEF:%d]%n",
+            System.out.printf("#%d %s %n Level: %d - %n Arma: %s %n Status: [HP:%d, ATK:%d, DEF:%d, DEX:%d]%n",
               rs.getInt("id"),
               rs.getString("name"),
               rs.getInt("level"),
               rs.getString("weapon"),
-              rs.getInt("hp"),
-              rs.getInt("atk"),
-              rs.getInt("def"));
+              rs.getFloat("hp"),
+              rs.getFloat("atk"),
+              rs.getFloat("def"),
+              rs.getFloat("dex"));
            }
          } catch (SQLException e) {
             System.err.println("Erro lendo inimigos: " + e.getMessage());
@@ -84,17 +88,19 @@ public class EnemyRepo {
   }
 
   public static void updateEnemy(Enemy enemy) {
-    String sql = "UPDATE enemies SET name = ?, level = ?, weapon = ?, hp = ?, atk = ?, def = ? WHERE id = ?";
+    String sql = "UPDATE enemies SET name = ?, level = ?, weapon = ?, hp = ?, atk = ?, def = ?, dex = ?, exp = ? WHERE id = ?";
     
     try (Connection conn = Database.connect();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
           pstmt.setString(1, enemy.getName());
           pstmt.setInt(2, enemy.getLevel());
           pstmt.setString(3, enemy.getWeapon());
-          pstmt.setInt(4, enemy.getHp());
-          pstmt.setInt(5, enemy.getAtk());
-          pstmt.setInt(6, enemy.getDef());
-          pstmt.setInt(7, enemy.getId());
+          pstmt.setFloat(4, enemy.getHp());
+          pstmt.setFloat(5, enemy.getAtk());
+          pstmt.setFloat(6, enemy.getDef());
+          pstmt.setFloat(7, enemy.getDex());
+          pstmt.setFloat(8, enemy.getExp());
+          pstmt.setInt(9, enemy.getId());
           pstmt.executeUpdate();
          } catch (SQLException e) {
           System.err.println("Erro ao atualizar inimigo: " + e.getMessage());

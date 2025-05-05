@@ -2,11 +2,9 @@ package Components;
 
 public class Enemy extends Personagem {
   String weapon;
-  int atk;
-  int def;
 
-  public Enemy(String name, int level, int hp, int id, int atk, int def, String weapon) {
-    super(name, level, hp, id);
+  public Enemy(String name, int level, float hp, int id, float atk, float def, float dex, int exp, String weapon) {
+    super(name, level, hp, atk, def, dex, exp, id);
     this.weapon = weapon;
     this.atk = atk;
     this.def = def;
@@ -16,11 +14,11 @@ public String getWeapon(){
   return weapon;
 }
 
-  public int getAtk() {
+  public float getAtk() {
     return atk;
   }
 
-  public int getDef() {
+  public float getDef() {
     return def;
   }
 

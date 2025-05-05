@@ -10,12 +10,13 @@ import Repository.PlayerInvRepo;
 public class Player extends Personagem {
   private Weapon equippedWeapon;
   private Map<Slot, Armor> equippedArmor;
-  private int exp;
-  private int nextLevel;
+  private double nextLevel;
+  private float lck;
   
-  public Player(String name, int level, int hp, int id, int exp, int nextLevel ){
-    super(name, level, hp, id);
+  public Player(String name, float hp, float atk, float def, float dex, float lck, int level, float exp, double nextLevel, int id){
+    super(name, level, hp, atk, def, dex, exp, id);
     this.exp = exp;
+    this.lck = lck;
     this.nextLevel = nextLevel;
     this.equippedArmor = new EnumMap<>(Slot.class);
   }
@@ -88,23 +89,27 @@ public class Player extends Personagem {
 
   public int getAttack() {
     int attack = 0;
-    attack += equippedWeapon.getAtk();
+    attack += equippedWeapon.getAtk() + atk;
     return attack;
-  }
-
-  public int getExp() {
-    return exp;
   }
 
   public void setExp(int exp) {
     this.exp = exp;
   }
 
-  public int getNextLevel() {
+  public double getNextLevel() {
     return nextLevel;
   }
 
-  public void setNextLevel(int nextLevel) {
+  public void setNextLevel(double nextLevel) {
     this.nextLevel = nextLevel;
+  }
+
+  public float getLck() {
+    return lck;
+  }
+
+  public void setLck(float lck) {
+    this.lck = lck;
   }
 }
