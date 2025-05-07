@@ -24,6 +24,8 @@ import Migration.ContextSchema;
 import Utils.NumberGenerator;
 import Utils.ClearConsole;
 import Utils.Verifiers;
+import Utils.NumberGenerator;
+
 
 import Components.Enemy;
 import Components.PlayerComponents.Armor.Slot;
@@ -251,14 +253,14 @@ public class Main {
                         }
                         if (atk == player.getAtk()) {
                             atk -= ((atk * enemy.getDef()) / 100);
+                            atk = Verifiers.roundNumbers(atk);
                         }
 
                         if (NumberGenerator.numberVerifier(rng, genNumbers, enemy.getDex())) {
                             System.out.println("O inimigo desviou do ataque!");
                         } else {
-                            enemy.setHp(enemy.getHp() - atk);
-                            System.out
-                                    .println(player.getName() + " Infligiu " + atk + " de dano ao " + enemy.getName());
+                            enemy.setHp( Verifiers.roundNumbers( enemy.getHp() - atk ) );
+                            System.out.println(player.getName() + " Infligiu " + atk + " de dano ao " + enemy.getName());
                             EnemyRepo.updateEnemy(enemy);
                             System.out.println(enemy.getName() + " HP: " + enemy.getHp());
                         }
@@ -266,6 +268,7 @@ public class Main {
 
                     if (enemyAtk == enemy.getAtk()) {
                         enemyAtk -= ((enemyAtk * player.getTotalDefense()) / 100);
+                        enemyAtk = Verifiers.roundNumbers(enemyAtk);
                     }
                     for (int i = 0; i < genNumbers.length; i++) {
                         genNumbers[i] = -1;
@@ -294,7 +297,7 @@ public class Main {
                         break;
                     } else {
                         System.out.println("O " + enemy.getName() + "  infligiu " + enemyAtk + " de dano ao jogador");
-                        player.setHp(player.getHp() - enemyAtk);
+                        player.setHp( Verifiers.roundNumbers( player.getHp() - enemyAtk) );
                         PlayerRepo.updatePlayer(player);
                     }
 

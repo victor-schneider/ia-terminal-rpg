@@ -60,4 +60,9 @@ public class Verifiers {
 
     return id;
   }
+
+  public static float roundNumbers (float number) {
+    number = Math.round(number * 100f) / 100f;
+    return number;
+  }
 }
