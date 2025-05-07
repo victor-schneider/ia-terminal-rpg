@@ -12,3 +12,4 @@ build
 /build/
 /out/
 /target/
+/app/data/Rpg.db
