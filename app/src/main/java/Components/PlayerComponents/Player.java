@@ -22,28 +22,47 @@ public class Player extends Personagem {
   }
 
   public void equipWeapon(Weapon weapon){
-    if(getEquippedWeapon() != null) {
-      System.out.println(name + " desequipou: " + getEquippedWeapon().getName());
-      getEquippedWeapon().setEquipped(false);
-      PlayerInvRepo.updateWeapon(getEquippedWeapon());
-      System.out.println("Arma " + getEquippedWeapon().getName() + " equipado?: " + getEquippedWeapon().getEquipped());
-
-      this.equippedWeapon = weapon;
+    if(getEquippedWeapon() == null) {
       weapon.setEquipped(true);
+      this.equippedWeapon = weapon;
       PlayerInvRepo.updateWeapon(weapon);
       System.out.println(name + " equipou a arma: " + weapon.getName() + "\n" + "Equipado?: " + weapon.getEquipped());
       return;
+
+    } else if(getEquippedWeapon().equals(weapon)) {
+        System.out.println("A arma: " + weapon.getName() + " já está equipada");
+        return;
+  
+      } else if(getEquippedWeapon().getEquipped()) {
+
+        System.out.println(name + " desequipou: " + getEquippedWeapon().getName());
+        getEquippedWeapon().setEquipped(false);
+        PlayerInvRepo.updateWeapon(getEquippedWeapon());
+        System.out.println("Arma " + getEquippedWeapon().getName() + " equipado?: " + getEquippedWeapon().getEquipped());
+  
+        this.equippedWeapon = weapon;
+        weapon.setEquipped(true);
+        PlayerInvRepo.updateWeapon(weapon);
+        System.out.println(name + " equipou a arma: " + weapon.getName() + "\n" + "Equipado?: " + weapon.getEquipped());
+        return;
+  
+      } else {
+        weapon.setEquipped(true);
+        this.equippedWeapon = weapon;
+        PlayerInvRepo.updateWeapon(weapon);
+        System.out.println(name + " equipou a arma: " + weapon.getName() + "\n" + "Equipado?: " + weapon.getEquipped());
+      }
     }
 
-    if(getEquippedWeapon() != null) {
-      System.out.println("A arma: " + weapon.getName() + " já está equipada");
+  public void unequipWeapon(Weapon weapon) {
+    if(!weapon.getEquipped()) {
+      System.out.println("A Arma ja esta desequipada!");
       return;
-    } else {
-      this.equippedWeapon = weapon;
-      weapon.setEquipped(true);
-      PlayerInvRepo.updateWeapon(weapon);
-      System.out.println(name + " equipou a arma: " + weapon.getName() + "\n" + "Equipado?: " + weapon.getEquipped());
     }
+
+    getEquippedWeapon().setEquipped(false);
+    PlayerInvRepo.updateWeapon(getEquippedWeapon());
+    System.out.println(getName() + " desequipou " + weapon.getName());
   }
 
   public void equipArmor(Armor armor){
@@ -69,6 +88,17 @@ public class Player extends Personagem {
       PlayerInvRepo.updateArmor(armor);
       System.out.println(name + " equipou a Armadura: " + armor.getName() + "\n" + "Equipado?: " + armor.getEquipped());
     }
+  }
+
+  public void unequipArmor( Armor armor) {
+    if (!armor.getEquipped()) {
+      System.out.println("Esta armadura já está desequipada!");
+      return;
+    }
+
+    getEquippedArmor(armor.getSlot()).setEquipped(false);
+    PlayerInvRepo.updateArmor(getEquippedArmor(armor.getSlot()));
+    System.out.println(getName() + " desequipou " + armor.getName());
   }
 
   public Weapon getEquippedWeapon() {
