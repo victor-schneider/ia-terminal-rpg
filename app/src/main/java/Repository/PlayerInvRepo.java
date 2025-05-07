@@ -3,6 +3,7 @@ package Repository;
 import Migration.Database;
 import Components.PlayerComponents.*;
 import Components.PlayerComponents.Armor.Slot;
+import Components.PlayerComponents.Item;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -57,6 +58,34 @@ public class PlayerInvRepo {
          } catch (SQLException e) {
           System.err.println("Erro ao criar armadura: " + e.getMessage());
          }
+  }
+
+  public static Item getItem(int id) {
+    String sql = "SELECT name, equipped, id, type FROM playerInventory WHERE id = ?";
+
+    try (Connection conn = Database.connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, id);
+
+            try (var rs = pstmt.executeQuery()) {
+              if(rs.next()) {
+                Item item = new Item(
+                  rs.getString("name"),
+                  rs.getBoolean("equipped"),
+                  rs.getInt("id"),
+                  rs.getString("type")
+                );
+                return item;
+              } else {
+                System.out.println("Nenhum item achado com o ID: " + id);
+                return null;
+              }
+            } 
+         } catch (SQLException e) {
+          System.err.println("Erro ao puxar item: " + e.getMessage());
+        }
+        return null;
   }
 
   public static Armor getArmor(int id) {
@@ -116,6 +145,7 @@ public class PlayerInvRepo {
               }
             } else {
               System.out.println("Nenhum item encontrado com ID " + id);
+              return null;
             }
           } 
         } catch (SQLException e) {
@@ -143,6 +173,7 @@ public class PlayerInvRepo {
               return weapon;
             } else {
               System.out.println("Nenhum item encontrado com ID " + id);
+              return null;
             }
           } 
         } catch (SQLException e) {
@@ -158,15 +189,59 @@ public class PlayerInvRepo {
          var stmt = conn.createStatement();
          var rs = stmt.executeQuery(sql)){
           while (rs.next()) {
-            System.out.printf("#%d %n Nome: %s %n Tipo: %s %n ATK: %d DEF:%d%n",
-            rs.getInt("id"),
-            rs.getString("name"),
-            rs.getString("type"),
-            rs.getInt("atk"),
-            rs.getInt("def"));
+            if(rs.getString("slot") == null) {
+              System.out.printf("%nID: %d %nItem: %s %nTipo: %s %nATK: %d %nEquipado?: %b%n------%n",
+              rs.getInt("id"),
+              rs.getString("name"),
+              rs.getString("type"),
+              rs.getInt("atk"),
+              rs.getBoolean("equipped"));
+
+            } else {
+              System.out.printf("%nID:%d %nItem: %s %nTipo: %s %nSlot: %s %nDEF: %d %nEquipado?: %b%n------%n",
+              rs.getInt("id"),
+              rs.getString("name"),
+              rs.getString("type"),
+              rs.getString("slot"),
+              rs.getInt("def"),
+              rs.getBoolean("equipped"));
+
+            }
           }
          } catch (SQLException e) {
           System.err.println("Erro lendo items: " + e.getMessage());
+         }
+  }
+
+  public static void listEquippedItems() {
+    String sql = "SELECT * FROM playerInventory WHERE equipped = 1";
+
+    try (Connection conn = Database.connect();
+         var stmt = conn.createStatement();
+         var rs = stmt.executeQuery(sql);) {
+          
+          while(rs.next()) {
+            if(rs.getString("slot") == null) {
+              System.out.printf("%nID: %d %nItem: %s %nTipo: %s %nATK: %d %nEquipado?: %b%n------%n",
+              rs.getInt("id"),
+              rs.getString("name"),
+              rs.getString("type"),
+              rs.getInt("atk"),
+              rs.getBoolean("equipped"));
+
+            } else {
+              System.out.printf("%nID:%d %nItem: %s %nTipo: %s %nSlot: %s %nDEF: %d %nEquipado?: %b%n------%n",
+              rs.getInt("id"),
+              rs.getString("name"),
+              rs.getString("type"),
+              rs.getString("slot"),
+              rs.getInt("def"),
+              rs.getBoolean("equipped"));
+
+            }
+          }
+         } catch (SQLException e) {
+          System.err.println("Erro ao listar items equipados: " + e.getMessage());
          }
   }
 
