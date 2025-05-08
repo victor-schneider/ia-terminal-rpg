@@ -6,11 +6,13 @@ public class Context {
   private Boolean combate;
   private String description;
   private  List<String> options;
+  private Boolean item;
 
-  public Context(String description, List<String> options, Boolean combate) {
+  public Context(String description, List<String> options, Boolean combate, Boolean item) {
     this.description = description;
     this.options = options;
     this.combate = combate;
+    this.item = item;
   }
 
   public String getDescription() {
@@ -25,6 +27,10 @@ public class Context {
     return combate;
   }
 
+  public Boolean getItem() {
+    return item;
+  }
+
   public void setDescription(String description) {
     this.description = description;
   }
@@ -35,6 +41,10 @@ public class Context {
 
   public void setCombate(Boolean combate) {
     this.combate = combate;
+  }
+
+  public void setItem(Boolean item) {
+    this.item = item;
   }
   
   public void display() {

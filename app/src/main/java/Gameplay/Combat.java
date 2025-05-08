@@ -50,7 +50,27 @@ public class Combat {
                             enemy.setHp( Verifiers.roundNumbers( enemy.getHp() - atk ) );
                             System.out.println(player.getName() + " Infligiu " + atk + " de dano ao " + enemy.getName());
                             EnemyRepo.updateEnemy(enemy);
-                            System.out.println(enemy.getName() + " HP: " + enemy.getHp());
+
+                            if (enemy.getHp() <= 0) {
+                                System.out.println("O inimigo foi derrotado! Jogador ganhou: " + enemy.getExp() + " de XP\n");
+                                player.setExp(enemy.getExp());
+                                if (player.getExp() > player.getLevel()) {
+                                    player.setLevel(player.getLevel() + 1);
+                                    player.setExp(0);
+                                    System.out.println(player.getName() + " Subiu para o nível: " + player.getLevel() + "!\n");
+        
+                                    player.setNextLevel(player.getNextLevel() * 1.2);
+        
+                                    PlayerRepo.updatePlayer(player);
+                                }
+        
+                                ContextRepo.createContext("Inimigo: " + enemy.getName() + " Foi derrotado, combate volta a ser FALSE e continue a historia contando como o inimigo morreu e qual é a próxima decisão do jogador");
+                                contexto = ContextCreation.main(player);
+                                contexto.setCombate(false);
+                                return false;
+                            } else {
+                                System.out.println(enemy.getName() + " HP: " + enemy.getHp());
+                            }
                         }
                     }
 
@@ -65,23 +85,6 @@ public class Combat {
                     if (NumberGenerator.numberVerifier(rng, genNumbers, player.getDex())) {
                         System.out.println("O jogador desviou do ataque!");
 
-                    } else if (enemy.getHp() <= 0) {
-                        System.out.println("O inimigo foi derrotado! Jogador ganhou: " + enemy.getExp() + " de XP\n");
-                        player.setExp(enemy.getExp());
-                        if (player.getExp() > player.getLevel()) {
-                            player.setLevel(player.getLevel() + 1);
-                            player.setExp(0);
-                            System.out.println(player.getName() + " Subiu para o nível: " + player.getLevel() + "!\n");
-
-                            player.setNextLevel(player.getNextLevel() * 1.2);
-
-                            PlayerRepo.updatePlayer(player);
-                        }
-
-                        ContextRepo.createContext("Inimigo: " + enemy.getName() + " Foi derrotado, combate volta a ser FALSE e continue a historia contando como o inimigo morreu e qual é a próxima decisão do jogador");
-                        contexto = ContextCreation.main();
-                        contexto.setCombate(false);
-                        break;
                     } else {
                         System.out.println("O " + enemy.getName() + "  infligiu " + enemyAtk + " de dano ao jogador");
                         player.setHp( Verifiers.roundNumbers( player.getHp() - enemyAtk) );
@@ -95,7 +98,7 @@ public class Combat {
                                 + " Foi derrotado, finalize a história demonstrando como o jogador morreu para o inimigo: "
                                 + enemy.getName() + " que possuia a arma: " + enemy.getWeapon());
 
-                        contexto = ContextCreation.main();
+                        contexto = ContextCreation.main(player);
 
                         System.out.println(contexto.getDescription());
 

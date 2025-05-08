@@ -1,8 +1,6 @@
+// Importação dos Util
 import java.util.Scanner;
 import java.util.logging.ErrorManager;
-// import java.util.List;
-// import java.util.ArrayList;
-// import com.google.gson.Gson;
 import java.util.random.RandomGenerator;
 
 // Importação dos Schemas do DB
@@ -12,29 +10,28 @@ import Migration.PlayerSchema;
 import Repository.ContextRepo;
 import Repository.EnemyRepo;
 import Repository.PlayerInvRepo;
-// import Repository.PlayerInventoryRepo;
 import Repository.PlayerRepo;
 import Migration.ContextSchema;
 
-// Importação dos arquivos
-// import Repository.ContextRepo;
-// import Repository.EnemyRepo;
-// import Repository.PlayerInventoryRepo;
-
+// Importação das classes Utils
 import Utils.NumberGenerator;
 import Utils.ClearConsole;
 import Utils.Verifiers;
 import Utils.NumberGenerator;
 
-
+// Importação dos components
 import Components.Enemy;
 import Components.PlayerComponents.Armor.Slot;
-import Gameplay.Combat;
-import Gameplay.Inventory;
 import Components.PlayerComponents.*;
 import Components.Context;
 
+// Importação da Gameplay
+import Gameplay.Combat;
+import Gameplay.Inventory;
+
+// Importação das criações
 import Manegement.EnemyCreation;
+import Manegement.ItemCreation;
 import Manegement.ContextCreation;
 
 public class Main {
@@ -42,9 +39,12 @@ public class Main {
 
         /*
          * TODO
-         * 3 - Fazer a IA gerar item ao jogador
-         * 4 - Criar JSON para aceitar items caso a IA retorne eles
-         * 5 - Adicionar lógia de entrada de items ao inventário
+         * 6 - Refatorar os arquivos de Manegement, Combat e Inventory para se adequar à orientação a objetos
+         * 7 - Adicionar no GET do player o left join com inventário com os items equipadas.
+         * 8 - Talvez refatorar o banco de dados e separar weapons e armor.
+         * 9 - Refatorar o context criation para criar além do contexto, os items. JSON conteria uma aba de Items onde ele retornaria o tipo de item mencionado.
+         * 10 - Adicionar junto ao status do jogador os items equipados para a IA ter não inventar items.
+         * 11 - O jogador, quando equipa um item do inventário, não necessariamente esta o usando na classe player. Teremos que achar uma forma de, quando equipar um item o método equipWeapon(weapon) ou equipArmor(armor) ser chamado para equipar este novo item.
          */
 
         ContextSchema.dropTable();
@@ -87,7 +87,7 @@ public class Main {
         }
 
         do {
-            contexto = ContextCreation.main();
+            contexto = ContextCreation.main(player);
 
             while (respostaValida == false) {
                 ClearConsole.clearConsole();
@@ -111,7 +111,10 @@ public class Main {
                 if (resposta == 1 || resposta == 2 || resposta == 3) {
                     respostaValida = true;
                 }
-
+                if(contexto.getItem() && resposta == 1) {
+                    ItemCreation.main(contexto, player);
+                    contexto.setItem(false);
+                }
                 // CHAMA O INVENTÁRIO
                 if (resposta == 4) {
                     Inventory.main(player);
@@ -131,6 +134,7 @@ public class Main {
             } else if (contexto.getCombate() && resposta == 3) {
                 Enemy enemy = EnemyCreation.main(player, contexto.getDescription());
                 int rng = NumberGenerator.main(100);
+
                 if(NumberGenerator.numberVerifier(rng, genNumbers, player.getDex())) {
                     System.out.println(player.getName() + " Conseguiu fugir com sucesso!");
                     ContextRepo.createContext(player.getName() + " Conseguiu fugir com sucesso do inimigo: " + enemy.getName());

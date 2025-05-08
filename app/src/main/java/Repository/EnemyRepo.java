@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import Components.Enemy;
 
 public class EnemyRepo {
-  public static int createEnemy(Enemy enemy) {
+  public static void createEnemy(Enemy enemy) {
     String sql= "INSERT INTO enemies(name, level, weapon, hp, atk, def, dex, exp) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
 
     try (Connection conn = Database.connect();
@@ -27,7 +27,8 @@ public class EnemyRepo {
 
           try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
             if (generatedKeys.next()) {
-              return generatedKeys.getInt(1);
+              enemy.setId(generatedKeys.getInt(1));
+              return;
             } else {
               throw new SQLException("Creating Enemy failed, no ID obtained");
             }
@@ -35,7 +36,7 @@ public class EnemyRepo {
     } catch (SQLException e) {
       System.err.println("Error creating enemy: " + e.getMessage());
     }
-    return -1;
+    return;
   }
 
   public static void getEnemy(int id) {
@@ -92,6 +93,7 @@ public class EnemyRepo {
     
     try (Connection conn = Database.connect();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
           pstmt.setString(1, enemy.getName());
           pstmt.setInt(2, enemy.getLevel());
           pstmt.setString(3, enemy.getWeapon());
