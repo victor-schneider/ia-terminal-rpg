@@ -39,7 +39,7 @@ public class EnemyRepo {
     return;
   }
 
-  public static void getEnemy(int id) {
+  public static Enemy getEnemy(int id) {
     String sql = "SELECT * FROM enemies WHERE id = ?";
 
     try (Connection conn = Database.connect();
@@ -48,15 +48,20 @@ public class EnemyRepo {
 
           try (var rs = pstmt.executeQuery()) {
             if(rs.next()){
-              System.out.printf("#%d %s %n Level: %d - %n Arma: %s %n Status: [HP:%d, ATK:%d, DEF:%d, DEX:%d]%n",
-              rs.getInt("id"),
-              rs.getString("name"),
-              rs.getInt("level"),
-              rs.getString("weapon"),
-              rs.getFloat("hp"),
-              rs.getFloat("atk"),
-              rs.getFloat("def"),
-              rs.getFloat("dex"));
+              Enemy enemy = new Enemy(
+                rs.getString("name"),
+                rs.getInt("level"),
+                rs.getFloat("hp"),
+                rs.getInt("id"),
+                rs.getFloat("atk"),
+                rs.getFloat("def"),
+                rs.getFloat("dex"),
+                rs.getInt("exp"),
+                rs.getString("weapon")
+              );
+
+              return enemy;
+
             } else {
               System.out.println("Nenhum inimigo encontrado com ID " + id);
             }
@@ -64,6 +69,7 @@ public class EnemyRepo {
          } catch (SQLException e) {
            System.out.println("Erro ao listar inimigo: " + e.getMessage());
          }
+    return null;
   }
 
   public static void listEnemy() {
