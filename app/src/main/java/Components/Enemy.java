@@ -6,20 +6,14 @@ public class Enemy extends Personagem {
   public Enemy(String name, int level, float hp, int id, float atk, float def, float dex, int exp, String weapon) {
     super(name, level, hp, atk, def, dex, exp, id);
     this.weapon = weapon;
-    this.atk = atk;
-    this.def = def;
   }
 
-public String getWeapon(){
-  return weapon;
-}
-
-  public float getAtk() {
-    return atk;
+  public String getWeapon(){
+    return weapon;
   }
 
-  public float getDef() {
-    return def;
+  public void setWeapon(String weapon) {
+    this.weapon = weapon;
   }
 
   public void getEnemyStatus(Enemy enemy) {

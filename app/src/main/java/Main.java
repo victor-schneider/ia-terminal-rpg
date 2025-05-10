@@ -77,6 +77,9 @@ public class Main {
         Player player = new Player("Victor", 100, 5, 2, 90, 5, 1, 0, 20, 1);
         PlayerRepo.createPlayer(player);
 
+        Enemy enemy = new Enemy("Goblin", 1, 20, 0, 20, 5, 15, 30, "Clava de pedra");
+        EnemyRepo.createEnemy(enemy);
+
         // Armor helmet = new Armor("Capcete de ferro", Slot.HELMET, 10, 0, true, "ARMOR");
         // PlayerInvRepo.createArmor(helmet);
         // player.equipArmor(helmet);
