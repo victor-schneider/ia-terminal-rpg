@@ -53,6 +53,25 @@ public class ContextRepo {
          }
   }
 
+  public static String getLastContext() {
+    String sql = "SELECT * FROM context ORDER BY id DESC LIMIT 1";
+
+    try ( Connection conn = Database.connect();
+          PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            try (var rs = pstmt.executeQuery()) {
+              if(rs.next()) {
+                return rs.getString("contexto");
+              }
+            } catch (Exception e) {
+              System.err.println("Erro ao procurar por contexto: " + e.getMessage());
+              return null;
+            }
+          } catch (SQLException e) {
+            System.err.println("Erro ao procurar contexto: " + e.getMessage());
+          }
+    return null;
+  }
+
   public static List<String> listContext() {
     String sql = "SELECT * FROM context";
     List<String> contexto = new ArrayList<>();

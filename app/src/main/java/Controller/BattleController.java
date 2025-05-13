@@ -9,18 +9,18 @@ import io.javalin.http.Context;
 
 public class BattleController {
   
-  private static final Gson gson = new Gson();
+  // private static final Gson gson = new Gson();
 
-  private static void startBattle(Context ctx) {
-    int playerId = Integer.parseInt(ctx.queryParam("playerId"));
-    int enemyId = Integer.parseInt(ctx.queryParam("enemyId"));
+  // private static void startBattle(Context ctx) {
+  //   int playerId = Integer.parseInt(ctx.queryParam("playerId"));
+  //   int enemyId = Integer.parseInt(ctx.queryParam("enemyId"));
 
-    Player player = PlayerRepo.getPlayer(playerId);
-    Enemy enemy = EnemyRepo.getEnemy(enemyId);
+  //   Player player = PlayerRepo.getPlayer();
+  //   Enemy enemy = EnemyRepo.getEnemy(enemyId);
 
-    if(player == null || enemy == null) {
-      ctx.status(404).result("Player ou inimigo não encontrado");
-    }
-  }
+  //   if(player == null || enemy == null) {
+  //     ctx.status(404).result("Player ou inimigo não encontrado");
+  //   }
+  // }
 
 }

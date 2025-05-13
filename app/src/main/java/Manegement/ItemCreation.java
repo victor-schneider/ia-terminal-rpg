@@ -24,10 +24,10 @@ import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.output.Response;
 
 public class ItemCreation {
-  public static void main(Context contexto, Player player) {
+  public static Item main() {
+    System.out.println("Create item foi chamado");
     Gson gson = new Gson();
-    List<String> statusJogador = new ArrayList<>();
-    
+
     ChatLanguageModel model = GeminiSingleton.getInstance();
 
     PromptTemplate promptTemplate = PromptTemplate.from("""
@@ -89,11 +89,14 @@ public class ItemCreation {
           }
         """);
 
+        Player player = PlayerRepo.getPlayer();
+        List<String> statusJogador = new ArrayList<>();
         statusJogador.add("Atk: " + player.getAttack() + "Def: " + player.getTotalDefense() + " Hp: " + player.getHp() + " level: " + player.getLevel());
 
         Map<String, Object> variables = new HashMap<>();
 
-        variables.put("contexto", contexto.getDescription());
+        String contexto = ContextRepo.getLastContext();
+        variables.put("contexto", contexto);
         variables.put("statusJogador", statusJogador);
         
         Prompt prompt = promptTemplate.apply(variables);
@@ -105,11 +108,13 @@ public class ItemCreation {
         Item item = gson.fromJson(wrappedJson, Item.class);
 
         if(item.getType().equals("WEAPON")) {
-          WeaponCreation.main(item, contexto, statusJogador);
+          WeaponCreation.main(item);
 
         } else if (item.getType().equals("ARMOR")) {
-          ArmorCreation.main(item, contexto, statusJogador);
+          ArmorCreation.main(item);
           
         }
+
+        return item;
   }
 }

@@ -65,7 +65,7 @@ public class Combat {
                                 }
         
                                 ContextRepo.createContext("Inimigo: " + enemy.getName() + " Foi derrotado, combate volta a ser FALSE e continue a historia contando como o inimigo morreu e qual é a próxima decisão do jogador");
-                                contexto = ContextCreation.main(player);
+                                contexto = ContextCreation.generateContext(player);
                                 contexto.setCombate(false);
                                 return false;
                             } else {
@@ -98,7 +98,7 @@ public class Combat {
                                 + " Foi derrotado, finalize a história demonstrando como o jogador morreu para o inimigo: "
                                 + enemy.getName() + " que possuia a arma: " + enemy.getWeapon());
 
-                        contexto = ContextCreation.main(player);
+                        contexto = ContextCreation.generateContext(player);
 
                         System.out.println(contexto.getDescription());
 

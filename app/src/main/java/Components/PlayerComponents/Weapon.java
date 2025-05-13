@@ -11,6 +11,7 @@ public class Weapon extends Item {
   public void setAtk(int atk){
     this.atk = atk;
   }
+  
   public int getAtk(){
     return atk;
   }

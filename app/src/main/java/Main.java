@@ -52,6 +52,8 @@ public class Main {
 
         RouteConfig.registerRoutes(app);
         app.start(7070);
+
+        
         /*
          * TODO
          * 6 - Refatorar os arquivos de Manegement, Combat e Inventory para se adequar à orientação a objetos
@@ -77,20 +79,22 @@ public class Main {
         Player player = new Player("Victor", 100, 5, 2, 90, 5, 1, 0, 20, 1);
         PlayerRepo.createPlayer(player);
 
-        Enemy enemy = new Enemy("Goblin", 1, 20, 0, 20, 5, 15, 30, "Clava de pedra");
-        EnemyRepo.createEnemy(enemy);
+        // Enemy enemy = new Enemy("Goblin", 1, 20, 0, 20, 5, 15, 30, "Clava de pedra");
+        // EnemyRepo.createEnemy(enemy);
 
-        // Armor helmet = new Armor("Capcete de ferro", Slot.HELMET, 10, 0, true, "ARMOR");
-        // PlayerInvRepo.createArmor(helmet);
-        // player.equipArmor(helmet);
+        Armor helmet = new Armor("Capcete de ferro", Slot.HELMET, 10, 0, true, "ARMOR");
+        PlayerInvRepo.createArmor(helmet);
+        player.equipArmor(helmet);
 
-        // Armor chestPlate = new Armor("Peitoral de ouro", Slot.CHEST, 2, 1, false, "ARMOR");
+        // Armor chestPlate = new Armor("Peitoral de couro", Slot.CHEST, 2, 1, true, "ARMOR");
         // PlayerInvRepo.createArmor(chestPlate);
 
-        // Weapon espada = new Weapon(5, "Espada de ferro", true, 1, "WEAPON");
-        // PlayerInvRepo.createWeapon(espada);
-        // player.equipWeapon(espada);
+        Weapon espada = new Weapon(5, "Espada de ferro", true, 1, "WEAPON");
+        PlayerInvRepo.createWeapon(espada);
+        player.equipWeapon(espada);
 
+        ContextCreation.generateContext(player);
+        
         // Weapon espada2 = new Weapon(10, "Espada de adamantium", false, 1, "WEAPON");
         // PlayerInvRepo.createWeapon(espada2);
 
