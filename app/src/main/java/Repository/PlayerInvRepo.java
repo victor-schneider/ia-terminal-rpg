@@ -1,6 +1,7 @@
 package Repository;
 
 import Migration.Database;
+import io.javalin.http.Context;
 import Components.PlayerComponents.*;
 import Components.PlayerComponents.Armor.Slot;
 import Components.PlayerComponents.Item;
@@ -9,6 +10,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.gson.Gson;
 
 // TODO configura o equipped aqui
 
@@ -182,35 +187,178 @@ public class PlayerInvRepo {
     return null;
   }
 
-  public static void listItems() {
+  public static List<String> listItems() {
+    Gson gson = new Gson();
     String sql = "SELECT * FROM playerInventory";
+    List<String> response = new ArrayList<>();
 
     try (Connection conn = Database.connect();
          var stmt = conn.createStatement();
          var rs = stmt.executeQuery(sql)){
           while (rs.next()) {
             if(rs.getString("slot") == null) {
-              System.out.printf("%nID: %d %nItem: %s %nTipo: %s %nATK: %d %nEquipado?: %b%n------%n",
-              rs.getInt("id"),
-              rs.getString("name"),
-              rs.getString("type"),
-              rs.getInt("atk"),
-              rs.getBoolean("equipped"));
+              
+                Weapon weapon = new Weapon(
+                rs.getInt("atk"),
+                rs.getString("name"),
+                rs.getBoolean("equipped"),
+                rs.getInt("id"),
+                rs.getString("type")
+                );
+                String weaponJson = gson.toJson(weapon);
+                response.add(weaponJson);
 
             } else {
-              System.out.printf("%nID:%d %nItem: %s %nTipo: %s %nSlot: %s %nDEF: %d %nEquipado?: %b%n------%n",
-              rs.getInt("id"),
-              rs.getString("name"),
-              rs.getString("type"),
-              rs.getString("slot"),
-              rs.getInt("def"),
-              rs.getBoolean("equipped"));
+              
+                Armor armor = new Armor(
+                  rs.getString("name"),
+                  Slot.valueOf(rs.getString("slot")),
+                  rs.getInt("def"),
+                  rs.getInt("id"),
+                  rs.getBoolean("equipped"),
+                  rs.getString("type")
+                );
+                String armorJson = gson.toJson(armor);
+                response.add(armorJson);
 
             }
+            
           }
+            return response;
          } catch (SQLException e) {
           System.err.println("Erro lendo items: " + e.getMessage());
          }
+    return null;
+  }
+
+  public static Weapon getEquippedWeapon() {
+    String sql = "SELECT * FROM playerInventory WHERE equipped = 1 AND type = 'WEAPON'";
+
+    try (Connection conn = Database.connect();
+         var stmt = conn.createStatement();
+         var rs = stmt.executeQuery(sql);) {
+          
+          if(rs.next()) {
+              Weapon weapon = new Weapon(
+                rs.getInt("atk"),
+                rs.getString("name"),
+                rs.getBoolean("equipped"),
+                rs.getInt("id"),
+                rs.getString("type")
+              );
+              
+              return weapon;
+            } 
+
+         } catch (SQLException e) {
+          System.err.println("Erro ao listar items equipados: " + e.getMessage());
+         }
+    return null;
+  }
+
+  public static Armor getEquippedHelmet() {
+    String sql = "SELECT * FROM playerInventory WHERE equipped = 1 AND slot = 'HELMET'";
+
+    try (Connection conn = Database.connect();
+         var stmt = conn.createStatement();
+         var rs = stmt.executeQuery(sql);) {
+          
+          if(rs.next()) {
+              Armor armor = new Armor(
+                rs.getString("name"),
+                Slot.HELMET,
+                rs.getInt("def"),
+                rs.getInt("id"),
+                rs.getBoolean("equipped"),
+                rs.getString("type")
+              );
+              
+              return armor;
+            } 
+
+         } catch (SQLException e) {
+          System.err.println("Erro ao listar helmet: " + e.getMessage());
+          return null;
+         }
+    return null;
+  }
+
+  public static Armor getEquippedChest() {
+    String sql = "SELECT * FROM playerInventory WHERE equipped = 1 AND slot = 'CHEST'";
+
+    try (Connection conn = Database.connect();
+         var stmt = conn.createStatement();
+         var rs = stmt.executeQuery(sql);) {
+          
+          if(rs.next()) {
+              Armor armor = new Armor(
+                rs.getString("name"),
+                Slot.CHEST,
+                rs.getInt("def"),
+                rs.getInt("id"),
+                rs.getBoolean("equipped"),
+                rs.getString("type")
+              );
+              
+              return armor;
+            } 
+
+         } catch (SQLException e) {
+          System.err.println("Erro ao listar chest: " + e.getMessage());
+         }
+    return null;
+  }
+
+  public static Armor getEquippedLegs() {
+    String sql = "SELECT * FROM playerInventory WHERE equipped = 1 AND slot = 'LEGS'";
+
+    try (Connection conn = Database.connect();
+         var stmt = conn.createStatement();
+         var rs = stmt.executeQuery(sql);) {
+          
+          if(rs.next()) {
+              Armor armor = new Armor(
+                rs.getString("name"),
+                Slot.LEGS,
+                rs.getInt("def"),
+                rs.getInt("id"),
+                rs.getBoolean("equipped"),
+                rs.getString("type")
+              );
+              
+              return armor;
+            } 
+
+         } catch (SQLException e) {
+          System.err.println("Erro ao listar legs: " + e.getMessage());
+         }
+    return null;
+  }
+
+  public static Armor getEquippedBoots() {
+    String sql = "SELECT * FROM playerInventory WHERE equipped = 1 AND slot = 'BOOTS'";
+
+    try (Connection conn = Database.connect();
+         var stmt = conn.createStatement();
+         var rs = stmt.executeQuery(sql);) {
+          
+          if(rs.next()) {
+              Armor armor = new Armor(
+                rs.getString("name"),
+                Slot.BOOTS,
+                rs.getInt("def"),
+                rs.getInt("id"),
+                rs.getBoolean("equipped"),
+                rs.getString("type")
+              );
+              
+              return armor;
+            } 
+
+         } catch (SQLException e) {
+          System.err.println("Erro ao listar boots: " + e.getMessage());
+         }
+    return null;
   }
 
   public static void listEquippedItems() {

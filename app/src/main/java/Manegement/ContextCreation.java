@@ -22,7 +22,7 @@ import dev.langchain4j.model.output.Response;
 
 
 public class ContextCreation {
-  public static Context main(Player player) {
+  public static Context generateContext(Player player) {
     Gson gson = new Gson();
     String contexto = "";
     List<String> resposta = new ArrayList<>();

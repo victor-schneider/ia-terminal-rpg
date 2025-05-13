@@ -29,7 +29,7 @@ public class PlayerController {
   }
 
   public static void getPlayer(Context ctx) {
-    Player player = PlayerRepo.getPlayer(1);
+    Player player = PlayerRepo.getPlayer();
 
     if(player == null) {
       ctx.status(404).result("Player não achado");
@@ -40,7 +40,7 @@ public class PlayerController {
   }
 
   public static void updatePlayer(Context ctx) {
-    Player existingPlayer = PlayerRepo.getPlayer(1);
+    Player existingPlayer = PlayerRepo.getPlayer();
 
     try {
     PlayerUpdateDTO updateData = gson.fromJson(ctx.body(), PlayerUpdateDTO.class);

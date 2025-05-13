@@ -26,9 +26,16 @@ import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.output.Response;
 
 public class ArmorCreation {
-  public static Armor main (Item item, Context contexto, List<String> statusJogador) {
+  public static Armor main (Item item) {
+    System.out.println("Create armor foi chamado");
     Gson gson = new Gson();
     List<String> statusItem =  new ArrayList<>();
+
+    Player player = PlayerRepo.getPlayer();
+    List<String> statusJogador = new ArrayList<>();
+    statusJogador.add("Atk: " + player.getAttack() + "Def: " + player.getTotalDefense() + " Hp: " + player.getHp() + " level: " + player.getLevel());
+
+    String contexto = ContextRepo.getLastContext();
 
     ChatLanguageModel model = GeminiSingleton.getInstance();
 
@@ -73,7 +80,7 @@ public class ArmorCreation {
 
     statusItem.add("Nome: " + item.getName() + "type: " + " equipped: " +item.getEquipped() + "id: " + item.getId() + "type: " + item.getType());
 
-    variables.put("contexto", "contexto");
+    variables.put("contexto", contexto);
     variables.put("statusJogador", statusJogador);
     variables.put("armor", statusItem);
 

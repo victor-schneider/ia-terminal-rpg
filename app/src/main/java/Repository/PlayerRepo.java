@@ -37,30 +37,44 @@ public class PlayerRepo {
          }
   }
 
-  public static Player getPlayer(int id) {
-    String sql = "SELECT * FROM player WHERE id = ?";
+  public static Player getPlayer() {
+    Player player = new Player(null, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    Weapon weapon = PlayerInvRepo.getEquippedWeapon();
+    if( weapon != null) player.equipWeapon(weapon);
+
+    Armor helmet = PlayerInvRepo.getEquippedHelmet();
+    if ( helmet != null ) player.equipArmor(helmet);
+
+    Armor chest = PlayerInvRepo.getEquippedChest();
+    if ( chest != null ) player.equipArmor(chest);
+
+    Armor legs = PlayerInvRepo.getEquippedLegs();
+    if ( legs != null ) player.equipArmor(legs);
+                
+    Armor boots = PlayerInvRepo.getEquippedBoots();
+    if ( boots != null ) player.equipArmor(boots);
+
+    String sql = "SELECT * FROM player WHERE id = 1";
 
     try (Connection conn = Database.connect();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
-          pstmt.setInt(1, id);
 
           try (var rs = pstmt.executeQuery()) {
             if(rs.next()) {
-              Player player = new Player(
-                rs.getString("name"),
-                rs.getInt("hp"),
-                rs.getInt("atk"),
-                rs.getInt("def"),
-                rs.getInt("dex"),
-                rs.getInt("lck"),
-                rs.getInt("level"),
-                rs.getInt("exp"),
-                rs.getInt("nextLevel"),
-                rs.getInt("id"));
-
-                return player;
+              player.setName(rs.getString("name"));
+              player.setHp(rs.getInt("hp"));
+              player.setAtk(rs.getInt("atk"));
+              player.setDef(rs.getInt("def"));
+              player.setDex(rs.getInt("dex"));
+              player.setLck(rs.getInt("lck"));
+              player.setLevel(rs.getInt("level"));
+              player.setExp(rs.getInt("exp"));
+              player.setNextLevel(rs.getInt("nextLevel"));
+              player.setId(rs.getInt("id"));
+                
+              return player;
             } else {
-              throw new SQLException("No player found with id: " + id);
+              throw new SQLException("No player found");
             }
           }
          } catch (SQLException e) {
