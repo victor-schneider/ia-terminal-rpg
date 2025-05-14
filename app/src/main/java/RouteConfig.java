@@ -1,3 +1,5 @@
+import Controller.BattleController;
+import Controller.ContextController;
 import Controller.EnemyController;
 import Controller.PlayerController;
 import Controller.PlayerInvController;
@@ -8,5 +10,7 @@ public class RouteConfig {
     PlayerController.registerRoutes(app);
     EnemyController.registerRoutes(app);
     PlayerInvController.registerRoutes(app);
+    BattleController.registerRoutes(app);
+    ContextController.registerRoutes(app);
   }
 }

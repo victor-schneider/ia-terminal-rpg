@@ -5,9 +5,12 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
+import Components.Context;
 import Components.Enemy;
 import Components.PlayerComponents.*;
+import Repository.ContextRepo;
 import Repository.EnemyRepo;
+import Repository.PlayerRepo;
 import Utils.JsonCleaner;
 import Utils.GeminiSingleton;
 
@@ -18,11 +21,13 @@ import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.output.Response;
 
 public class EnemyCreation {
-  public static Enemy main(Player player, String contexto) {
+  public static Enemy main() {
     Gson gson = new Gson();
+    Player player = PlayerRepo.getPlayer();
+    String contexto = ContextRepo.getLastContext();
     String playerStats = "";
 
-    playerStats += "ATK: " + player.getAttack() + "DEF: " + player.getTotalDefense() + "Level: " + player.getLevel();
+    playerStats += "Atk: " + player.getAttack() + "Def: " + player.getTotalDefense() + " Hp: " + player.getHp() + " level: " + player.getLevel();
 
     ChatLanguageModel model = GeminiSingleton.getInstance();
 
@@ -57,10 +62,10 @@ public class EnemyCreation {
     String wrappedJson = response.content().text().trim();
     wrappedJson = JsonCleaner.clean(wrappedJson);
 
-    Enemy e = gson.fromJson(wrappedJson, Enemy.class);
+    Enemy enemy = gson.fromJson(wrappedJson, Enemy.class);
 
-    EnemyRepo.createEnemy(e);
+    EnemyRepo.createEnemy(enemy);
 
-    return e;
+    return enemy;
   }
 }
