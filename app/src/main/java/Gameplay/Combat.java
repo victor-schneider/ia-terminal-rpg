@@ -13,27 +13,28 @@ import Utils.Verifiers;
 import java.util.Scanner;
 
 public class Combat {
-  public static boolean main (Context contexto, Player player, Enemy enemy, int genNumbers[], boolean finalizar) {
+  public static boolean main (Enemy enemy) {
+    int[] genNumbers = new int[100];
+    for (int i = 0; i < genNumbers.length; i++) {
+        genNumbers[i] = -1;
+    }
+
+    Context contexto = new Context(null, null, null, null);
+    Player player = PlayerRepo.getPlayer();
+
     float atk = player.getAttack();
+    float enemyAtk = enemy.getAtk();
     Scanner scanner = new Scanner(System.in);
     
-                float enemyAtk = enemy.getAtk();
+    System.out.println("Combate!\n\n");
+    enemy.getEnemyStatus(enemy);
 
-                System.out.println("Combate!\n\n");
-                enemy.getEnemyStatus(enemy);
+    int opcao = 0;
+    int rng = NumberGenerator.main(100);
 
-                while (contexto.getCombate()) {
-                    int opcao = 0;
-                    int rng = NumberGenerator.main(100);
-
-                    for (int i = 0; i < genNumbers.length; i++) {
-                        genNumbers[i] = -1;
-                    }
-
-                    System.out.println("Você decide: \n[1] - Atacar");
-                    opcao = scanner.nextInt();
-
-                    if (opcao == 1) {
+    for (int i = 0; i < genNumbers.length; i++) {
+        genNumbers[i] = -1;
+    }
                         atk = player.getAtk();
                         if (NumberGenerator.numberVerifier(rng, genNumbers, player.getLck() + 10)) {
                             atk *= 2;
@@ -65,14 +66,16 @@ public class Combat {
                                 }
         
                                 ContextRepo.createContext("Inimigo: " + enemy.getName() + " Foi derrotado, combate volta a ser FALSE e continue a historia contando como o inimigo morreu e qual é a próxima decisão do jogador");
+
                                 contexto = ContextCreation.generateContext(player);
-                                contexto.setCombate(false);
-                                return false;
+                                
+                                scanner.close();
+                                return true;
                             } else {
                                 System.out.println(enemy.getName() + " HP: " + enemy.getHp());
                             }
                         }
-                    }
+                    
 
                     if (enemyAtk == enemy.getAtk()) {
                         enemyAtk -= ((enemyAtk * player.getTotalDefense()) / 100);
@@ -94,20 +97,17 @@ public class Combat {
                     if (player.getHp() <= 0) {
                         System.out.println("Voce perdeu, ruim demais");
                         contexto.setCombate(false);
-                        ContextRepo.createContext("Jogador: " + player.getName()
-                                + " Foi derrotado, finalize a história demonstrando como o jogador morreu para o inimigo: "
-                                + enemy.getName() + " que possuia a arma: " + enemy.getWeapon());
+                        ContextRepo.createContext("Jogador: " + player.getName() + " Foi derrotado, finalize a história demonstrando como o jogador morreu para o inimigo: " + enemy.getName() + " que possuia a arma: " + enemy.getWeapon());
 
                         contexto = ContextCreation.generateContext(player);
 
                         System.out.println(contexto.getDescription());
 
-                        finalizar = true;
                         scanner.close();
-                        return finalizar;
+                        return true;
                     }
                     System.out.println(player.getName() + "HP: " + player.getHp());
-                }
+
     return false;
   }
 }

@@ -104,9 +104,6 @@ public class PlayerInvController {
         ctx.status(200).result(gson.toJson(PlayerInvRepo.getArmor(id)));
         
       }
-
-      // Descobrir como arrumar esse setSlot
-
     } catch (Exception e) {
       ctx.status(400).result("Erro ao atualizar item: " + e.getMessage());
     }

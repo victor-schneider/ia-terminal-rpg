@@ -74,15 +74,15 @@ public class ContextRepo {
 
   public static List<String> listContext() {
     String sql = "SELECT * FROM context";
-    List<String> contexto = new ArrayList<>();
+    List<String> response = new ArrayList<>();
 
     try (Connection conn = Database.connect();
          var stmt = conn.createStatement();
          var rs = stmt.executeQuery(sql)) {
           while(rs.next()) {
-            contexto.add(rs.getString("contexto"));
+            response.add(rs.getString("contexto"));
           }
-          return contexto;
+          return response;
          } catch (SQLException e) {
           System.err.println("Erro lendo contexto: " + e.getMessage());
          }

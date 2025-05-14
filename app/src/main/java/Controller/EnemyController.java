@@ -2,6 +2,7 @@ package Controller;
 
 import Repository.EnemyRepo;
 import Components.DTO.EnemyUpdateDTO;
+import Manegement.EnemyCreation;
 import Components.Enemy;
 import com.google.gson.Gson;
 
@@ -23,10 +24,9 @@ public class EnemyController {
   // Create Read Update Delete
   private static void createEnemy(Context ctx) {
     try {
-      Enemy enemy = gson.fromJson(ctx.body(), Enemy.class);
+      Enemy enemy = EnemyCreation.main();
 
-      EnemyRepo.createEnemy(enemy);
-      ctx.status(200).result("Inimigo criado com sucesso!");
+      ctx.status(200).result("Inimigo criado com sucesso!").result(gson.toJson(enemy));
     } catch (Exception e) {
       ctx.status(401).result("Falha ao criar inimigo: " + e.getMessage());
     }

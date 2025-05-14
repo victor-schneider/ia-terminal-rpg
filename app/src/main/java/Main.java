@@ -62,17 +62,18 @@ public class Main {
          * 9 - Refatorar o context criation para criar além do contexto, os items. JSON conteria uma aba de Items onde ele retornaria o tipo de item mencionado.
          * 10 - Adicionar junto ao status do jogador os items equipados para a IA ter não inventar items.
          * 11 - O jogador, quando equipa um item do inventário, não necessariamente esta o usando na classe player. Teremos que achar uma forma de, quando equipar um item o método equipWeapon(weapon) ou equipArmor(armor) ser chamado para equipar este novo item.
+         * 12 - O método de desviar de um ataque pode ficar na classe Personagem, pois ambos player e inimigo usam este método
          */
 
-        ContextSchema.dropTable();
-        EnemiesSchema.dropTable();
-        PlayerInvSchema.dropTable();
+        // ContextSchema.dropTable();
+        // EnemiesSchema.dropTable();
+        // PlayerInvSchema.dropTable();
 
-        PlayerSchema.dropTable();
-        EnemiesSchema.initEnemiesDb();
-        PlayerInvSchema.initPlayerInvDb();
-        PlayerSchema.initPlayer();
-        ContextSchema.initContextDb();
+        // PlayerSchema.dropTable();
+        // EnemiesSchema.initEnemiesDb();
+        // PlayerInvSchema.initPlayerInvDb();
+        // PlayerSchema.initPlayer();
+        // ContextSchema.initContextDb();
 
 
 
@@ -105,10 +106,7 @@ public class Main {
 
         // int crit;
         
-        // int[] genNumbers = new int[100];
-        // for (int i = 0; i < genNumbers.length; i++) {
-        //     genNumbers[i] = -1;
-        // }
+        
 
         // do {
         //     contexto = ContextCreation.main(player);
