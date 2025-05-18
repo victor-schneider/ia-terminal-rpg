@@ -57,6 +57,8 @@ public class Main {
         /*
          * TODO
          * 6 - Refatorar os arquivos de Manegement, Combat e Inventory para se adequar à orientação a objetos
+         * * Juntar todos os Manegement num arquivo dentro de contexto
+         *  Repository vira uma classe e Connection conn = Database.connect()
          * 7 - Adicionar no GET do player o left join com inventário com os items equipadas.
          * 8 - Talvez refatorar o banco de dados e separar weapons e armor.
          * 9 - Refatorar o context criation para criar além do contexto, os items. JSON conteria uma aba de Items onde ele retornaria o tipo de item mencionado.
@@ -65,15 +67,15 @@ public class Main {
          * 12 - O método de desviar de um ataque pode ficar na classe Personagem, pois ambos player e inimigo usam este método
          */
 
-        // ContextSchema.dropTable();
-        // EnemiesSchema.dropTable();
-        // PlayerInvSchema.dropTable();
+        ContextSchema.dropTable();
+        EnemiesSchema.dropTable();
+        PlayerInvSchema.dropTable();
 
-        // PlayerSchema.dropTable();
-        // EnemiesSchema.initEnemiesDb();
-        // PlayerInvSchema.initPlayerInvDb();
-        // PlayerSchema.initPlayer();
-        // ContextSchema.initContextDb();
+        PlayerSchema.dropTable();
+        EnemiesSchema.initEnemiesDb();
+        PlayerInvSchema.initPlayerInvDb();
+        PlayerSchema.initPlayer();
+        ContextSchema.initContextDb();
 
 
 

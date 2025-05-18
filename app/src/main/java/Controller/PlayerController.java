@@ -13,10 +13,10 @@ public class PlayerController {
   private static final Gson gson = new Gson();
 
   public static void registerRoutes(Javalin app) {
-    app.get("/player", PlayerController::getPlayer);
-    app.post("/player", PlayerController::createPlayer);
-    app.patch("/player", PlayerController::updatePlayer);
-    app.delete("/player", PlayerController::deletePlayer);
+    app.get("/players", PlayerController::getPlayer);
+    app.post("/players", PlayerController::createPlayer);
+    app.patch("/players", PlayerController::updatePlayer);
+    app.delete("/players", PlayerController::deletePlayer);
   }
 
   public static void createPlayer(Context ctx) {
@@ -36,7 +36,7 @@ public class PlayerController {
       return;
     }
 
-    ctx.json(gson.toJson(player));
+    ctx.status(200).result(gson.toJson(player));
   }
 
   public static void updatePlayer(Context ctx) {
