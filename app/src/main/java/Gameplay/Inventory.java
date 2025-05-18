@@ -1,14 +1,14 @@
 package Gameplay;
-import Components.PlayerComponents.Player;
-import Components.PlayerComponents.Armor;
-import Components.PlayerComponents.Item;
-import Components.PlayerComponents.Player;
-import Components.PlayerComponents.Weapon;
 import Repository.PlayerInvRepo;
 import Utils.ClearConsole;
 import Utils.Verifiers;
 
 import java.util.Scanner;
+
+import Model.PlayerComponents.Armor;
+import Model.PlayerComponents.Item;
+import Model.PlayerComponents.Player;
+import Model.PlayerComponents.Weapon;
 
 public class Inventory {
   public static void main (Player player) {

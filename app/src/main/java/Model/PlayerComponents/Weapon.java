@@ -1,4 +1,4 @@
-package Components.PlayerComponents;
+package Model.PlayerComponents;
 
 public class Weapon extends Item {
   private int atk;

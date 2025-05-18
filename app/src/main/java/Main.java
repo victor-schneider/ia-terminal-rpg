@@ -7,6 +7,10 @@ import java.util.random.RandomGenerator;
 import Migration.EnemiesSchema;
 import Migration.PlayerInvSchema;
 import Migration.PlayerSchema;
+import Model.Context;
+import Model.Enemy;
+import Model.PlayerComponents.*;
+import Model.PlayerComponents.Armor.Slot;
 import Repository.ContextRepo;
 import Repository.EnemyRepo;
 import Repository.PlayerInvRepo;
@@ -18,21 +22,8 @@ import Utils.NumberGenerator;
 import Utils.ClearConsole;
 import Utils.Verifiers;
 import Utils.NumberGenerator;
-
-// Importação dos components
-import Components.Enemy;
-import Components.PlayerComponents.Armor.Slot;
-import Components.PlayerComponents.*;
-import Components.Context;
-
 // Importação da Gameplay
-import Gameplay.Combat;
 import Gameplay.Inventory;
-
-// Importação das criações
-import Manegement.EnemyCreation;
-import Manegement.ItemCreation;
-import Manegement.ContextCreation;
 
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
@@ -96,7 +87,7 @@ public class Main {
         PlayerInvRepo.createWeapon(espada);
         player.equipWeapon(espada);
 
-        ContextCreation.generateContext(player);
+        
         
         // Weapon espada2 = new Weapon(10, "Espada de adamantium", false, 1, "WEAPON");
         // PlayerInvRepo.createWeapon(espada2);

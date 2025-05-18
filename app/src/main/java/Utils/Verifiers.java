@@ -1,9 +1,10 @@
 package Utils;
 
-import Components.PlayerComponents.Item;
 import Repository.PlayerInvRepo;
 
 import java.util.Scanner;
+
+import Model.PlayerComponents.Item;
 
 public class Verifiers {
   public static int itemIdVerifier(int id) {

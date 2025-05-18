@@ -1,4 +1,4 @@
-package Components.DTO;
+package Model.DTO;
 
 public class PlayerUpdateDTO {
     private String name;
