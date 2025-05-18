@@ -6,7 +6,13 @@ import java.sql.SQLException;
 public class Database {
   private static final String URL = "jdbc:sqlite:data/Rpg.db";
 
+  private static Connection conn = null;
+
   public static Connection connect() throws SQLException {
-    return DriverManager.getConnection(URL);
+    if(conn == null || conn.isClosed()) {
+      return DriverManager.getConnection(URL);
+    }
+    return conn;
+
   }
 }

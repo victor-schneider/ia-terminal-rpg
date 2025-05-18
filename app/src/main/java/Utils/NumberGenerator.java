@@ -1,8 +1,9 @@
 package Utils;
 
-import Components.PlayerComponents.Player;
-
 import java.util.Random;
+
+import Model.PlayerComponents.Player;
+
 import java.util.Arrays;
 
 public class NumberGenerator {

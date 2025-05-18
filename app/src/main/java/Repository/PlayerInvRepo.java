@@ -1,10 +1,9 @@
 package Repository;
 
 import Migration.Database;
+import Model.PlayerComponents.*;
+import Model.PlayerComponents.Armor.Slot;
 import io.javalin.http.Context;
-import Components.PlayerComponents.*;
-import Components.PlayerComponents.Armor.Slot;
-import Components.PlayerComponents.Item;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

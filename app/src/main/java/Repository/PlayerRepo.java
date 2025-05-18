@@ -1,7 +1,7 @@
 package Repository;
 
 import Migration.Database;
-import Components.PlayerComponents.*;
+import Model.PlayerComponents.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

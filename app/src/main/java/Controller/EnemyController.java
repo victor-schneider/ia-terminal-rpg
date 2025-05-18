@@ -1,9 +1,9 @@
 package Controller;
 
 import Repository.EnemyRepo;
-import Components.DTO.EnemyUpdateDTO;
-import Manegement.EnemyCreation;
-import Components.Enemy;
+import Model.Enemy;
+import Model.DTO.EnemyUpdateDTO;
+
 import com.google.gson.Gson;
 
 import io.javalin.Javalin;
@@ -14,18 +14,19 @@ public class EnemyController {
   private static final Gson gson = new Gson();
 
   public static void registerRoutes(Javalin app) {
-    app.get("/enemy/{id}", EnemyController::getEnemy);
-    app.post("/enemy", EnemyController::createEnemy);
-    app.patch("/enemy/{id}", EnemyController::updateEnemy);
-    app.delete("/enemy/{id}", EnemyController::deleteEnemy);
+    app.get("/enemies/{id}", EnemyController::getEnemy);
+    app.post("/enemies", EnemyController::createEnemy);
+    app.patch("/enemies/{id}", EnemyController::updateEnemy);
+    app.delete("/enemies/{id}", EnemyController::deleteEnemy);
   }
 
   // C R U D
   // Create Read Update Delete
   private static void createEnemy(Context ctx) {
     try {
-      Enemy enemy = EnemyCreation.main();
-
+      Model.Context context = new Model.Context(null, null, null, null, true, null);
+      Enemy enemy = context.createEnemy();
+      
       ctx.status(200).result("Inimigo criado com sucesso!").result(gson.toJson(enemy));
     } catch (Exception e) {
       ctx.status(401).result("Falha ao criar inimigo: " + e.getMessage());

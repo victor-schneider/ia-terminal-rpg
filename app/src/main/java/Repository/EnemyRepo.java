@@ -1,12 +1,12 @@
 package Repository;
 
 import Migration.Database;
+import Model.Enemy;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import Components.Enemy;
 
 public class EnemyRepo {
   public static void createEnemy(Enemy enemy) {

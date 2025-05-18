@@ -1,4 +1,4 @@
-package Components.PlayerComponents;
+package Model.PlayerComponents;
 
 public class Item {
   private String name;

@@ -1,4 +1,4 @@
-package Components;
+package Model;
 
 public class Enemy extends Personagem {
   String weapon;

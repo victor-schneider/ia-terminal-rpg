@@ -1,4 +1,4 @@
-package Components;
+package Model;
 
 public class Personagem {
   protected String name;

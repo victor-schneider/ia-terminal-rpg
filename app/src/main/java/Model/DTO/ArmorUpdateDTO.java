@@ -1,4 +1,4 @@
-package Components.DTO;
+package Model.DTO;
 
 public class ArmorUpdateDTO {
     private Integer def;

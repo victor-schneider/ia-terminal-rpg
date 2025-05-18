@@ -3,19 +3,17 @@ package Controller;
 import Repository.PlayerInvRepo;
 import Repository.PlayerRepo;
 import Repository.ContextRepo;
-import Manegement.ContextCreation;
-import Manegement.ItemCreation;
 
 import java.util.List;
 import java.util.ArrayList;
 
 import com.google.gson.Gson;
 
-import Components.DTO.ArmorUpdateDTO;
-import Components.DTO.WeaponUpdateDTO;
-import Components.PlayerComponents.Armor;
-import Components.PlayerComponents.Item;
-import Components.PlayerComponents.Weapon;
+import Model.DTO.ArmorUpdateDTO;
+import Model.DTO.WeaponUpdateDTO;
+import Model.PlayerComponents.Armor;
+import Model.PlayerComponents.Item;
+import Model.PlayerComponents.Weapon;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -33,8 +31,10 @@ public class PlayerInvController {
 
   public static void createInventoryItem(Context ctx) {
     try {
-      Item item = ItemCreation.main(); // Lembrar de tirar este retorno de Item, O objetico é simplesmente dizer que retornou e que está no inventário para ser equipado.
-      ctx.status(200).result(gson.toJson(item));
+      Model.Context contexto = new Model.Context(null, null, true, null, null, null);
+      Armor armor = contexto.createArmor();// Lembrar de tirar este retorno de Item, O objetico é simplesmente dizer que retornou e que está no inventário para ser equipado.
+      ctx.status(200).result(gson.toJson(armor));
+
     } catch (Exception e) {
       ctx.status(400).result("Falha ao criar item!: " + e.getMessage());
     }

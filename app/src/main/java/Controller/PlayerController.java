@@ -1,8 +1,9 @@
 package Controller;
 
 import Repository.PlayerRepo;
-import Components.DTO.PlayerUpdateDTO;
-import Components.PlayerComponents.Player;
+import Model.DTO.PlayerUpdateDTO;
+import Model.PlayerComponents.Player;
+
 import com.google.gson.Gson;
 
 import io.javalin.Javalin;

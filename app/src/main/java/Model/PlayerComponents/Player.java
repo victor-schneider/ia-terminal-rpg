@@ -1,10 +1,10 @@
-package Components.PlayerComponents;
+package Model.PlayerComponents;
 
 import java.util.EnumMap;
 import java.util.Map;
 
-import Components.Personagem;
-import Components.PlayerComponents.Armor.Slot;
+import Model.Personagem;
+import Model.PlayerComponents.Armor.Slot;
 import Repository.PlayerInvRepo;
 
 public class Player extends Personagem {
@@ -141,5 +141,9 @@ public class Player extends Personagem {
 
   public void setLck(float lck) {
     this.lck = lck;
+  }
+
+  public String getStatus() {
+    return "Atk: " + getAttack() + "Def: " + getTotalDefense() + " Hp: " + getHp() + " level: " + getLevel();
   }
 }
