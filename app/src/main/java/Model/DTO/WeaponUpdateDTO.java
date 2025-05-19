@@ -7,6 +7,8 @@ public class WeaponUpdateDTO {
     private Integer id;
     private String type;
 
+    
+
     public Integer getAtk() {
         return atk;
     }

@@ -11,7 +11,6 @@ public class PlayerUpdateDTO {
     private Float exp;
     private Double nextLevel;
 
-    // Getters and Setters
     public String getName() {
         return name;
     }

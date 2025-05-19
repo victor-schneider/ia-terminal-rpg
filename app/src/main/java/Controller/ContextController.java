@@ -4,6 +4,7 @@ import Repository.ContextRepo;
 import Repository.PlayerRepo;
 
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 
 import com.google.gson.Gson;
@@ -23,9 +24,12 @@ public class ContextController {
 
   public static void createContext(Context ctx) {
     try {
-      Model.Context context = new Model.Context(null, null, null, null, null, null);
-    
-      ctx.status(200).result(gson.toJson(context.createContext()));
+      Model.Context context = new Model.Context(null, null, null, null, null);
+      
+      context = context.createContext();
+      Map<String, Model.Context> response = Map.of("context", context);
+
+      ctx.status(200).result(gson.toJson(response));
 
     } catch (Exception e ) {
       ctx.status(400).result("Falha ao criar contexto: " + e.getMessage());

@@ -1,6 +1,7 @@
 package Repository;
 
 import Migration.Database;
+import Model.DTO.ArmorDTO;
 import Model.PlayerComponents.*;
 import Model.PlayerComponents.Armor.Slot;
 import io.javalin.http.Context;
@@ -13,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
-
-// TODO configura o equipped aqui
 
 public class PlayerInvRepo {
   public static void createWeapon(Weapon weapon) {
@@ -366,30 +365,88 @@ public class PlayerInvRepo {
     try (Connection conn = Database.connect();
          var stmt = conn.createStatement();
          var rs = stmt.executeQuery(sql);) {
-          
+          List<String> response = new ArrayList<>();
+          Gson gson = new Gson();
           while(rs.next()) {
+            
             if(rs.getString("slot") == null) {
-              System.out.printf("%nID: %d %nItem: %s %nTipo: %s %nATK: %d %nEquipado?: %b%n------%n",
-              rs.getInt("id"),
-              rs.getString("name"),
-              rs.getString("type"),
+              Weapon weapon = new Weapon(
               rs.getInt("atk"),
-              rs.getBoolean("equipped"));
+              rs.getString("name"),
+              rs.getBoolean("equipped"),
+              rs.getInt("id"),
+              rs.getString("type"));
+
+              String weaponJson = gson.toJson(weapon);
+              response.add(weaponJson);
 
             } else {
-              System.out.printf("%nID:%d %nItem: %s %nTipo: %s %nSlot: %s %nDEF: %d %nEquipado?: %b%n------%n",
-              rs.getInt("id"),
+              Slot slot = Slot.HELMET;
+              if(rs.getString("type") == "HELMET") slot = Slot.HELMET;
+              if(rs.getString("type") == "CHEST") slot = Slot.CHEST ;
+              if(rs.getString("type") == "LEGS") slot = Slot.LEGS ;
+              if(rs.getString("type") == "BOOTS") slot = Slot.BOOTS ;
+              Armor armor = new Armor(
+                
               rs.getString("name"),
-              rs.getString("type"),
-              rs.getString("slot"),
+              slot,
               rs.getInt("def"),
-              rs.getBoolean("equipped"));
+              rs.getInt("id"),
+              rs.getBoolean("equipped"),
+              rs.getString("type"));
+
+              String armorJson = gson.toJson(armor);
+              response.add(armorJson);
 
             }
           }
          } catch (SQLException e) {
           System.err.println("Erro ao listar items equipados: " + e.getMessage());
          }
+  }
+
+  public static List<ArmorDTO> listEquippedArmor() {
+    String sql = "SELECT * FROM playerInventory WHERE equipped = 1 AND type = 'ARMOR'";
+
+    try (Connection conn = Database.connect();
+         var stmt = conn.createStatement();
+         var rs = stmt.executeQuery(sql);) {
+          List<ArmorDTO> response = new ArrayList<>();
+          Gson gson = new Gson();
+
+          while(rs.next()) {
+              ArmorDTO armorDTO = new ArmorDTO();
+
+              Slot slot = Slot.HELMET;
+              if(rs.getString("type") == "HELMET") slot = Slot.HELMET;
+              if(rs.getString("type") == "CHEST") slot = Slot.CHEST ;
+              if(rs.getString("type") == "LEGS") slot = Slot.LEGS ;
+              if(rs.getString("type") == "BOOTS") slot = Slot.BOOTS ;
+              Armor armor = new Armor(
+                rs.getString("name"),
+                slot,
+                rs.getInt("def"),
+                rs.getInt("id"),
+                rs.getBoolean("equipped"),
+                rs.getString("type")
+              );
+
+              armorDTO.setName(armor.getName());
+              armorDTO.setType(armor.getType());
+              armorDTO.setSlot(armor.getSlot().toString());
+              armorDTO.setDef(armor.getDef());
+              armorDTO.setEquipped(armor.getEquipped());
+              armorDTO.setId(armor.getId());
+
+              response.add(armorDTO);
+
+            }
+
+            return response;
+         } catch (SQLException e) {
+          System.err.println("Erro ao listar items equipados: " + e.getMessage());
+         }
+    return null;
   }
 
   public static void updateWeapon(Weapon weapon){
