@@ -5,9 +5,9 @@ import java.util.List;
 public class ContextUpdateDTO {
   private String description;
   private  String options;
-  private Boolean weapon, armor, enemy, combat;
+  private Boolean weapon, armor, combat;
 
-  public Boolean getCombate() {
+  public Boolean getCombat() {
     return combat;
   }
 
@@ -25,10 +25,6 @@ public class ContextUpdateDTO {
 
   public Boolean getWeapon() {
     return weapon;
-  }
-
-  public Boolean getEnemy() {
-    return enemy;
   }
 
   public void setCombat(Boolean combat) {
@@ -49,9 +45,5 @@ public class ContextUpdateDTO {
 
   public void setWeapon(Boolean weapon) {
     this.weapon = weapon;
-  }
-
-  public void setEnemy(Boolean enemy) {
-    this.enemy = enemy;
   }
 }

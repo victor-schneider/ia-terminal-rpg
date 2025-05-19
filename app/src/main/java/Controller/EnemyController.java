@@ -4,6 +4,8 @@ import Repository.EnemyRepo;
 import Model.Enemy;
 import Model.DTO.EnemyUpdateDTO;
 
+import java.util.Map;
+
 import com.google.gson.Gson;
 
 import io.javalin.Javalin;
@@ -24,12 +26,15 @@ public class EnemyController {
   // Create Read Update Delete
   private static void createEnemy(Context ctx) {
     try {
-      Model.Context context = new Model.Context(null, null, null, null, true, null);
+      Model.Context context = new Model.Context(null, null, null, true, null);
       Enemy enemy = context.createEnemy();
+      Map<String, Enemy> response = Map.of("enemy", enemy);
       
-      ctx.status(200).result("Inimigo criado com sucesso!").result(gson.toJson(enemy));
+      ctx.status(200).result("Inimigo criado com sucesso!").result(gson.toJson(response));
+
     } catch (Exception e) {
       ctx.status(401).result("Falha ao criar inimigo: " + e.getMessage());
+
     }
   }
 
@@ -38,8 +43,9 @@ public class EnemyController {
       int enemyId = Integer.parseInt(ctx.pathParam("id"));
 
       Enemy enemy = EnemyRepo.getEnemy(enemyId);
+      Map<String, Enemy> response = Map.of("enemy", enemy);
 
-      ctx.status(200).result(gson.toJson(enemy));
+      ctx.status(200).result(gson.toJson(response));
     } catch (Exception e) {
       ctx.status(400).result("Falha ao encontrar inimig: " + e.getMessage());
     }
@@ -51,7 +57,10 @@ public class EnemyController {
 
       Enemy existingEnemy = EnemyRepo.getEnemy(enemyId);
 
-      EnemyUpdateDTO updateData = gson.fromJson(ctx.body(), EnemyUpdateDTO.class);
+      // Novo padrão de parsing do JSON
+      Map<String, EnemyUpdateDTO> map = gson.fromJson(ctx.body(), Map.class);
+      String enemyJson = gson.toJson(map.get("enemy"));
+      EnemyUpdateDTO updateData = gson.fromJson(enemyJson, EnemyUpdateDTO.class);
 
       if (updateData.getName() != null) existingEnemy.setName(updateData.getName());
       if (updateData.getLevel() != null) existingEnemy.setLevel(updateData.getLevel());
@@ -61,7 +70,6 @@ public class EnemyController {
       if (updateData.getDex() != null) existingEnemy.setDex(updateData.getDex());
       if (updateData.getExp() != null) existingEnemy.setExp(updateData.getExp());
       if (updateData.getId() != null) existingEnemy.setId(updateData.getId());
-      if (updateData.getName() != null) existingEnemy.setName(updateData.getName());
       if (updateData.getWeapon() != null) existingEnemy.setWeapon(updateData.getWeapon());
       
       EnemyRepo.updateEnemy(existingEnemy);

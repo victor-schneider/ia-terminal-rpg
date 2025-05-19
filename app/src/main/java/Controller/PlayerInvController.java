@@ -5,17 +5,21 @@ import Repository.PlayerRepo;
 import Repository.ContextRepo;
 
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 
 import com.google.gson.Gson;
 
+import Model.DTO.ArmorDTO;
 import Model.DTO.ArmorUpdateDTO;
 import Model.DTO.WeaponUpdateDTO;
+import Model.DTO.WeaponDTO;
 import Model.PlayerComponents.Armor;
 import Model.PlayerComponents.Item;
 import Model.PlayerComponents.Weapon;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import opennlp.tools.stemmer.snowball.arabicStemmer;
 
 public class PlayerInvController {
   
@@ -31,9 +35,14 @@ public class PlayerInvController {
 
   public static void createInventoryItem(Context ctx) {
     try {
-      Model.Context contexto = new Model.Context(null, null, true, null, null, null);
-      Armor armor = contexto.createArmor();// Lembrar de tirar este retorno de Item, O objetico é simplesmente dizer que retornou e que está no inventário para ser equipado.
-      ctx.status(200).result(gson.toJson(armor));
+      Map<String, Model.Context> map = gson.fromJson(ctx.body(), Map.class);
+      String contextJson = gson.toJson(map.get("context"));
+      Model.Context context = gson.fromJson(contextJson, Model.Context.class);
+      List<String> response = new ArrayList<>();
+
+      context.verifyContext();
+      
+      ctx.status(200).result("Item criado com suceso");
 
     } catch (Exception e) {
       ctx.status(400).result("Falha ao criar item!: " + e.getMessage());
@@ -45,10 +54,33 @@ public class PlayerInvController {
       int id = Integer.parseInt(ctx.pathParam("id"));
 
       if(PlayerInvRepo.getItem(id).getType().equals("WEAPON")) {
-        ctx.status(200).result(gson.toJson(PlayerInvRepo.getWeapon(id)));
+        Weapon weaponData = PlayerInvRepo.getWeapon(id);
+        WeaponDTO weapon = new WeaponDTO();
+        
+        weapon.setAtk(weaponData.getAtk());
+        weapon.setName(weaponData.getName());
+        weapon.setEquipped(weaponData.getEquipped());
+        weapon.setId(weaponData.getId());
+        weapon.setType(weaponData.getType());
+
+        Map<String, WeaponDTO> response = Map.of("weapon", weapon);
+
+        ctx.status(200).result(gson.toJson(response));
 
       } else if (PlayerInvRepo.getItem(id).getType().equals("ARMOR")) {
-        ctx.status(200).result(gson.toJson(PlayerInvRepo.getArmor(id)));
+        Armor data = PlayerInvRepo.getArmor(id);
+        ArmorDTO armor = new ArmorDTO();
+
+        armor.setName(data.getName());
+        armor.setType(data.getType());
+        armor.setSlot(data.getSlot().toString());
+        armor.setDef(data.getDef());
+        armor.setEquipped(data.getEquipped());
+        armor.setId(data.getId());
+
+        Map<String, ArmorDTO> response = Map.of("armor", armor);
+
+        ctx.status(200).result(gson.toJson(armor));
 
       }
     } catch (Exception e) {
