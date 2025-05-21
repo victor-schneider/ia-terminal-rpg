@@ -6,6 +6,15 @@ public class ContextUpdateDTO {
   private String description;
   private  String options;
   private Boolean weapon, armor, combat;
+  private int id;
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
+  }
 
   public Boolean getCombat() {
     return combat;

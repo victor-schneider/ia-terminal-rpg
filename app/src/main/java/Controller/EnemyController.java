@@ -26,7 +26,7 @@ public class EnemyController {
   // Create Read Update Delete
   private static void createEnemy(Context ctx) {
     try {
-      Model.Context context = new Model.Context(null, null, null, true, null);
+      Model.Context context = new Model.Context(null, null, null, true, null, 0);
       Enemy enemy = context.createEnemy();
       Map<String, Enemy> response = Map.of("enemy", enemy);
       

@@ -190,43 +190,97 @@ public class PlayerInvRepo {
     String sql = "SELECT * FROM playerInventory";
     List<String> response = new ArrayList<>();
 
+    String divider = "╠════════════════════";
+
     try (Connection conn = Database.connect();
          var stmt = conn.createStatement();
          var rs = stmt.executeQuery(sql)){
-          while (rs.next()) {
-            if(rs.getString("slot") == null) {
-              
-                Weapon weapon = new Weapon(
-                rs.getInt("atk"),
-                rs.getString("name"),
-                rs.getBoolean("equipped"),
-                rs.getInt("id"),
-                rs.getString("type")
-                );
-                String weaponJson = gson.toJson(weapon);
-                response.add(weaponJson);
 
-            } else {
-              
-                Armor armor = new Armor(
-                  rs.getString("name"),
-                  Slot.valueOf(rs.getString("slot")),
-                  rs.getInt("def"),
-                  rs.getInt("id"),
-                  rs.getBoolean("equipped"),
-                  rs.getString("type")
-                );
-                String armorJson = gson.toJson(armor);
-                response.add(armorJson);
+      boolean first = true;
+      while (rs.next()) {
+        if (!first) {
+          System.out.println(divider);
+        }
+        first = false;
 
-            }
-            
-          }
-            return response;
-         } catch (SQLException e) {
-          System.err.println("Erro lendo items: " + e.getMessage());
-         }
+        int id = rs.getInt("id");
+        String type = rs.getString("type");
+        String name = rs.getString("name");
+        boolean equipped = rs.getBoolean("equipped");
+
+        if (rs.getString("slot") == null) {
+          // Weapon
+          int atk = rs.getInt("atk");
+          System.out.printf("  ID: %d\n", id);
+          System.out.printf("  Tipo: %s\n", type);
+          System.out.printf("  Nome: %s\n", name);
+          System.out.printf("  ATK: %d\n", atk);
+          System.out.printf("  Equipada: %s\n", equipped ? "Sim" : "Não");
+          String weaponJson = gson.toJson(new Weapon(atk, name, equipped, id, type));
+          response.add(weaponJson);
+        } else {
+          // Armor
+          String slot = rs.getString("slot");
+          int def = rs.getInt("def");
+          System.out.printf("  ID: %d\n", id);
+          System.out.printf("  Tipo: %s\n", type);
+          System.out.printf("  Nome: %s - %s\n", slot, name);
+          System.out.printf("  DEF: %d\n", def);
+          System.out.printf("  Equipada: %s\n", equipped ? "Sim" : "Não");
+          String armorJson = gson.toJson(new Armor(name, Slot.valueOf(slot), def, id, equipped, type));
+          response.add(armorJson);
+        }
+      }
+      return response;
+    } catch (SQLException e) {
+      System.err.println("Erro lendo items: " + e.getMessage());
+    }
     return null;
+  }
+
+  public static void listEquippedItems() {
+    String divider = "╠════════════════════";
+
+    String sql = "SELECT * FROM playerInventory WHERE equipped = 1";
+
+    try (Connection conn = Database.connect();
+         var stmt = conn.createStatement();
+         var rs = stmt.executeQuery(sql);) {
+
+      boolean first = true;
+      while (rs.next()) {
+        if (!first) {
+          System.out.println(divider);
+        }
+        first = false;
+
+        int id = rs.getInt("id");
+        String type = rs.getString("type");
+        String name = rs.getString("name");
+        boolean equipped = rs.getBoolean("equipped");
+
+        if (rs.getString("slot") == null) {
+          // Weapon
+          int atk = rs.getInt("atk");
+          System.out.printf("  ID: %d\n", id);
+          System.out.printf("  Tipo: %s\n", type);
+          System.out.printf("  Nome: %s\n", name);
+          System.out.printf("  ATK: %d\n", atk);
+          System.out.printf("  Equipada: %s\n", equipped ? "Sim" : "Não");
+        } else {
+          // Armor
+          String slot = rs.getString("slot");
+          int def = rs.getInt("def");
+          System.out.printf("  ID: %d\n", id);
+          System.out.printf("  Tipo: %s\n", type);
+          System.out.printf("  Nome: %s - %s\n", slot, name);
+          System.out.printf("  DEF: %d\n", def);
+          System.out.printf("  Equipada: %s\n", equipped ? "Sim" : "Não");
+        }
+      }
+    } catch (SQLException e) {
+      System.err.println("Erro ao listar items equipados: " + e.getMessage());
+    }
   }
 
   public static Weapon getEquippedWeapon() {
@@ -357,52 +411,6 @@ public class PlayerInvRepo {
           System.err.println("Erro ao listar boots: " + e.getMessage());
          }
     return null;
-  }
-
-  public static void listEquippedItems() {
-    String sql = "SELECT * FROM playerInventory WHERE equipped = 1";
-
-    try (Connection conn = Database.connect();
-         var stmt = conn.createStatement();
-         var rs = stmt.executeQuery(sql);) {
-          List<String> response = new ArrayList<>();
-          Gson gson = new Gson();
-          while(rs.next()) {
-            
-            if(rs.getString("slot") == null) {
-              Weapon weapon = new Weapon(
-              rs.getInt("atk"),
-              rs.getString("name"),
-              rs.getBoolean("equipped"),
-              rs.getInt("id"),
-              rs.getString("type"));
-
-              String weaponJson = gson.toJson(weapon);
-              response.add(weaponJson);
-
-            } else {
-              Slot slot = Slot.HELMET;
-              if(rs.getString("type") == "HELMET") slot = Slot.HELMET;
-              if(rs.getString("type") == "CHEST") slot = Slot.CHEST ;
-              if(rs.getString("type") == "LEGS") slot = Slot.LEGS ;
-              if(rs.getString("type") == "BOOTS") slot = Slot.BOOTS ;
-              Armor armor = new Armor(
-                
-              rs.getString("name"),
-              slot,
-              rs.getInt("def"),
-              rs.getInt("id"),
-              rs.getBoolean("equipped"),
-              rs.getString("type"));
-
-              String armorJson = gson.toJson(armor);
-              response.add(armorJson);
-
-            }
-          }
-         } catch (SQLException e) {
-          System.err.println("Erro ao listar items equipados: " + e.getMessage());
-         }
   }
 
   public static List<ArmorDTO> listEquippedArmor() {

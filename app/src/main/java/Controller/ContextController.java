@@ -18,15 +18,16 @@ public class ContextController {
   private static final Gson gson = new Gson();
 
   public static void registerRoutes(Javalin app) {
-    app.post("/contexts", ContextController::createContext);
+    app.get("/contexts", ContextController::createContext);
     app.patch("/contexts", ContextController::updateContext);
   }
 
   public static void createContext(Context ctx) {
     try {
-      Model.Context context = new Model.Context(null, null, null, null, null);
+      Model.Context context = new Model.Context(null, null, null, null, null, 0);
       
       context = context.createContext();
+
       Map<String, Model.Context> response = Map.of("context", context);
 
       ctx.status(200).result(gson.toJson(response));

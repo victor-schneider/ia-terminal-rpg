@@ -9,6 +9,7 @@ import Model.PlayerComponents.Player;
 import Model.PlayerComponents.Weapon;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +39,7 @@ public class PlayerController {
   }
 
   public static void getPlayer(Context ctx) {
-    Player data = PlayerRepo.getPlayer();
+    Player playerData = PlayerRepo.getPlayer();
     WeaponDTO weaponDTO = new WeaponDTO();
     List<WeaponDTO> weaponList = new ArrayList<>();
 
@@ -52,27 +53,27 @@ public class PlayerController {
     weaponList.add(weaponDTO);
 
     PlayerDTO player = new PlayerDTO();
-    player.setName(data.getName());
-    player.setHp(data.getHp());
-    player.setAtk(data.getAtk());
-    player.setDef(data.getDef());
-    player.setDex(data.getDex());
-    player.setLck(data.getLck());
-    player.setLevel(data.getLevel());
-    player.setExp(data.getExp());
-    player.setNextLevel(data.getNextLevel());
+    player.setName(playerData.getName());
+    player.setHp(playerData.getHp());
+    player.setAtk(playerData.getAtk());
+    player.setDef(playerData.getDef());
+    player.setDex(playerData.getDex());
+    player.setLck(playerData.getLck());
+    player.setLevel(playerData.getLevel());
+    player.setExp(playerData.getExp());
+    player.setNextLevel(playerData.getNextLevel());
     player.setEquippedWeapon(weaponList);
     player.setEquippedArmor(PlayerInvRepo.listEquippedArmor());
 
-    Map<String, PlayerDTO> response = Map.of("player", player);
-
+    
+    
 
     if(player == null) {
       ctx.status(404).result("Player não achado");
       return;
     }
 
-    ctx.status(200).result(gson.toJson(response));
+    ctx.status(200).result(gson.toJson(player));
   }
 
   public static void updatePlayer(Context ctx) {

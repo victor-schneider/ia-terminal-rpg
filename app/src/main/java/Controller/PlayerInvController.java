@@ -26,11 +26,11 @@ public class PlayerInvController {
   private static final Gson gson = new Gson();
   
   public static void registerRoutes(Javalin app) {
-    app.post("/inventory", PlayerInvController::createInventoryItem);
-    app.get("/inventory/{id}", PlayerInvController::getInventoryItem);
-    app.get("/inventory", PlayerInvController::listInventoryItem);
-    app.patch("/inventory/{id}", PlayerInvController::updateInventoryItem);
-    app.delete("/inventory/{id}", PlayerInvController::deleteInventoryItem);
+    app.post("/inventories", PlayerInvController::createInventoryItem);
+    app.get("/inventories/{id}", PlayerInvController::getInventoryItem);
+    app.get("/inventories", PlayerInvController::listInventoryItem);
+    app.patch("/inventories/{id}", PlayerInvController::updateInventoryItem);
+    app.delete("/inventories/{id}", PlayerInvController::deleteInventoryItem);
   }
 
   public static void createInventoryItem(Context ctx) {
@@ -92,7 +92,9 @@ public class PlayerInvController {
   public static void listInventoryItem(Context ctx) {
     try {
       List<String> response = PlayerInvRepo.listItems();
-      ctx.status(200).result(response.toString());
+     
+
+      ctx.status(200).result(gson.toJson(response));
 
     } catch (Exception e) {
       ctx.status(400).result("Erro ao listar items do inventário: " + e.getMessage());

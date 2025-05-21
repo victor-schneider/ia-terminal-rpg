@@ -17,6 +17,13 @@ public class Enemy extends Personagem {
   }
 
   public void getEnemyStatus(Enemy enemy) {
-    System.out.println("Inimigo: " + enemy.getName() + "\nLevel: " + enemy.getLevel() + "\nArma: " + enemy.getWeapon() + "\nHP: " + enemy.getHp() + "\nATK: " + enemy.getAtk() + "\nDEF: " + enemy.getDef());
+    System.out.println("===== STATUS DO INIMIGO =====");
+    System.out.println("Nome  : " + enemy.getName());
+    System.out.println("Level : " + enemy.getLevel());
+    System.out.println("Arma  : " + enemy.getWeapon());
+    System.out.println("HP    : " + enemy.getHp());
+    System.out.println("ATK   : " + enemy.getAtk());
+    System.out.println("DEF   : " + enemy.getDef());
+    System.out.println("=============================");
   }
 }
