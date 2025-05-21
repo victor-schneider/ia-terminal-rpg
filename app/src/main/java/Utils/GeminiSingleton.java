@@ -17,8 +17,8 @@ public class GeminiSingleton {
           instance = VertexAiGeminiChatModel.builder()
           .project(System.getenv("PROJECT_ID"))
           .location(System.getenv("LOCATION"))
-          .modelName("gemini-2.0-flash")
-          .maxOutputTokens(1000)
+          .modelName("gemini-2.5-flash-preview-05-20")
+          .maxOutputTokens(65535)
           .temperature(2f)
           .build();
         }

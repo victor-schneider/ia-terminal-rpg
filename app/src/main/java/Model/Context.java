@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 
 import Model.Context;
 import Model.PlayerComponents.Armor;
+import Model.PlayerComponents.Armor.Slot;
 import Model.PlayerComponents.Item;
 import Model.PlayerComponents.Player;
 import Model.PlayerComponents.Weapon;
@@ -20,6 +21,7 @@ import Repository.PlayerRepo;
 import Utils.JsonCleaner;
 import Utils.NumberGenerator;
 import Utils.Verifiers;
+import Utils.ClearConsole;
 import Utils.GeminiSingleton;
 
 import dev.langchain4j.data.message.AiMessage;
@@ -34,15 +36,26 @@ public class Context {
   private String description;
   private  List<String> options;
   private Boolean weapon, armor, combat;
+  private int id;
 
-  public Context(String description, List<String> options, Boolean weapon, Boolean armor, Boolean combat) {
+  public Context(String description, List<String> options, Boolean weapon, Boolean armor, Boolean combat, int id) {
     this.description = description;
     this.options = options;
     this.weapon = weapon;
     this.armor = armor;
+    this.id = id;
   }
 
   public static final Gson gson = new Gson();
+  public static final Scanner scanner = new Scanner(System.in);
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
+  }
 
   public String getDescription() {
     return description;
@@ -84,125 +97,255 @@ public class Context {
     this.armor = armor;
   }
   
-  public void display() {
-    System.out.println(description);
+  public void displayDescription() {
+    int width = 110;
+    int textWidth = width - 2; // espaço para bordas
+    int wrapWidth = width - 10; // quebra um pouco antes do final para evitar cortes abruptos
+    String border = "\u001B[37m" + "═".repeat(width) + "\u001B[0m";
+    System.out.println("\u001B[37m╔" + "═".repeat(width) + "╗\u001B[0m");
+    System.out.printf("\u001B[37m║%s║\u001B[0m\n", String.format("%-" + width + "s", "                                   HISTÓRIA"));
+    System.out.println("\u001B[37m╠" + "═".repeat(width) + "╣\u001B[0m");
 
-    for (int i = 0; i < options.size(); i++) {
-      System.out.println((i + 1) + ". " + options.get(i));
+    String[] lines = getDescription().split("\n");
+    for (String line : lines) {
+      int start = 0;
+      while (start < line.length()) {
+        int end = Math.min(start + wrapWidth, line.length());
+        // Tenta quebrar em espaço antes do limite, se possível
+        if (end < line.length()) {
+          int lastSpace = line.lastIndexOf(' ', end);
+          if (lastSpace > start) {
+            end = lastSpace;
+          }
+        }
+        String part = line.substring(start, end).trim();
+        System.out.printf("\u001B[37m║ %-"+textWidth+"s \u001B[0m║\n", part);
+        start = end;
+        // Pula espaço se a quebra foi em espaço
+        while (start < line.length() && line.charAt(start) == ' ') start++;
+      }
     }
+    System.out.println("\u001B[37m╚" + "═".repeat(width) + "╝\u001B[0m");
+  }
+
+  public Boolean displayOptions() {
+    int width = 110;
+    int opcao = 0;
+    do {
+      if (!combat) {
+      System.out.println("\u001B[37m╔" + "═".repeat(width) + "╗\u001B[0m");
+      System.out.printf("\u001B[37m║%s║\u001B[0m\n", String.format("%-" + width + "s", "                                   OPÇÕES"));
+      System.out.println("\u001B[37m╠" + "═".repeat(width) + "╣\u001B[0m");
+      for (int i = 0; i < options.size(); i++) {
+        String option = options.get(i);
+        int maxOptionWidth = width - 8;
+        int start = 0;
+        boolean firstLine = true;
+        while (start < option.length()) {
+        int end = Math.min(start + maxOptionWidth, option.length());
+        String part = option.substring(start, end);
+        if (firstLine) {
+          System.out.printf("\u001B[37m║  [%d] - %-"+maxOptionWidth+"s║\u001B[0m\n", (i + 1), part);
+          firstLine = false;
+        } else {
+          System.out.printf("\u001B[37m║        %-"+maxOptionWidth+"s║\u001B[0m\n", part);
+        }
+        start = end;
+        }
+      }
+      System.out.println("\u001B[37m╠" + "═".repeat(width) + "╣\u001B[0m");
+      System.out.printf("\u001B[33m║  [4] - %-"+(width-8)+"s║\u001B[0m\n", "Abrir Inventário");
+      System.out.printf("\u001B[31m║  [5] - %-"+(width-8)+"s║\u001B[0m\n", "Finalizar Jogo");
+      System.out.println("\u001B[37m╚" + "═".repeat(width) + "╝\u001B[0m");
+      System.out.print("Escolha uma opção: ");
+      opcao = scanner.nextInt();
+
+      if (opcao < 1 || opcao > 5) {
+        System.out.println("\u001B[31mOpção inválida, digite novamente!\u001B[0m\n");
+      }
+      } else if (combat) {
+      return false;
+      }
+
+      switch (opcao) {
+      case 4:
+        Player player = PlayerRepo.getPlayer();
+        player.inventory();
+        displayDescription();
+        break;
+      case 5:
+        return true;
+      }
+
+    } while (opcao < 1 || opcao > 3);
+
+    
+
+    ContextRepo.createContext(options.get(opcao - 1));
+    return false;
   }
   
-  public List<String> verifyContext() {
-    List<String> response = new ArrayList<>();
+  public Boolean verifyContext() {
 
     if(combat) {
-      createEnemy();
+      Enemy enemy = createEnemy();
+      Player player = PlayerRepo.getPlayer();
+      
+      Boolean fugiu = false;
+      int opcao = 0;
+      do {
+          System.out.printf("""
+            ╔═════════ COMBATE ═════════╗
+              Você vai:
+              [1] - Atacar Inimigo
+              [2] - Abrir inventário
+              [3] - Tentar Fugir
+            ╚═══════════════════════════╝
+            """);
+          opcao = scanner.nextInt();
+
+          switch (opcao) {
+            case (2):
+              player.inventory();
+
+            break;
+
+            case (3):
+            int rng = NumberGenerator.main(100);
+            int[] genNumbers = new int[100];
+
+              for (int i = 0; i < genNumbers.length; i++) {
+                genNumbers[i] = -1;
+              }
+            if (NumberGenerator.numberVerifier(rng, genNumbers, player.getLck() + 10)) {
+              System.out.println(player.getName() + " conseguiu escapar!");
+              ContextRepo.createContext("O jogador consegiu escapador do inimigo: " + enemy.getName() + " continue a história contando como ele conseguiu escapar deste inimigo");
+              fugiu = true;
+            }
+            break;
+          }
+
+        } while (opcao != 1 && !fugiu);
+
+        if(!fugiu) return combat(enemy);
 
     } else if (armor) {
-      String armorJson = gson.toJson(createArmor());
-      response.add(armorJson);
-      return response;
+      createArmor();
 
     } else if (weapon) {
-      String weaponJson = gson.toJson(createWeapon());
-      response.add(weaponJson);
-      return response;
-      
+      createWeapon();
     } 
-    return response;
+    return false;
   }
   
   public Context createContext() {
     Gson gson = new Gson();
-
     List<String> resposta = new ArrayList<>();
     String contexto = "";
     Player player = PlayerRepo.getPlayer();
     String statusJogador = player.getStatus();
 
     ChatLanguageModel model = GeminiSingleton.getInstance();
-    
-      PromptTemplate promptTemplate = PromptTemplate.from("""
-          Você é um Dungeon Master de um jogo de RPG estilo Dungeons & Dragons com combate por turnos. Sua principal função é criar e narrar uma história interativa e progressiva, com elementos de exploração, combate e recompensas.
 
-          ### Objetivo da história:
-          - Criar uma narrativa contínua e envolvente.
-          - A história deve evoluir gradualmente em dificuldade e complexidade.
-          - A ambientação e os desafios devem refletir a progressão do jogador.
+    PromptTemplate promptTemplate = PromptTemplate.from("""
+      You are the Dungeon Master of a turn-based Dungeons & Dragons-style RPG. Your task is to generate a continuous, evolving narrative in discrete “blocks” of play. Each block must follow these rules:
 
-          ### Regras para geração da história:
-            1. **Sempre crie um novo bloco de história** com três opções de ação relacionadas ao contexto atual.
-            2. As opções devem respeitar as escolhas anteriores do jogador (fornecidas na seção `Dados Disponíveis`. Se ainda não houver contexto, apenas inicie a história.
-            3. **Pelo menos uma das opções deve levar a um combate** — mas o combate pode ser indireto (ex: explorar uma dungeon antes do encontro).
+      1. **Output JSON only**, sem markdown:
+         {
+           "description": "...",      // descrição rica em detalhes do cenário atual
+           "options": ["…","…","…"], // sempre 3 escolhas
+           "combat": false,          // true se o próximo passo levar a combate imediato (ex: o jogador encontrou um goblin perdido e a resposta do jogador demonstra a intenção de atacar o goblin)
+           "weapon": false,          // true se houver obtenção de arma branca
+           "armor": false            // true se houver obtenção de armadura
+         }
 
-          ### Início da jornada:
-          - A história pode começar em qualquer lugar, mas de preferencia, em algum lugar civilizado.
-          - Descreva o ambiente com riqueza de detalhes: construções, clima, horário do dia, e atmosfera geral.
+      2. **Cenário inicial**  
+         - Comece em um local civilizado (ex.: vila, taverna, mercado)  
+         - Descreva clima, construções, habitantes, sons e cores.
 
-          ### Dados disponíveis:
-          - {{statusJogador}}: status atual do jogador (nome, vida, nível, etc.)
-          - {{contextoHistoria}}: contexto atual da história (leia completamente antes de continuar)
+      3. **Opções de ação**  
+         - Sempre 3 escolhas distintas:  
+           1. Avançar na história  
+           2. Alternativa de fuga ou contorno  
+           3. Gancho inesperado (surpresa narrativa)  
+         - Pelo menos uma opção deve apontar para um combate indireto (ex.: aceitar missão de dungeon, investigar sons estranhos, etc.).
+         - Utilize essas orientações por padrão, mas não se limite a elas. Caso você achar alguma oportunidade para deixar a história mais dinâmica, você possui a liberdade para criar opções diferentes.
 
-          ### Estrutura da resposta:
-          A IA deve sempre responder em **formato JSON puro (sem markdown)**, seguindo este modelo:
+      4. **Variáveis de contexto**  
+         - `{{contextoHistoria}}`: tudo que já ocorreu e as decisões do jogador (última linha = escolha atual).  
+         - `{{statusJogador}}`: estado atual do jogador (nome, vida, nível, equipamentos).
 
-          {
-            "description": "Texto com a descrição da cena ou contexto atual da história.",
-            "options": [
-              "Opção 1",
-              "Opção 2",
-              "Opção 3"
-            ],
-            "combat": false,
-            "enemy": false,
-            "weapon": false,
-            "armor": false
-          }
+      5. **Progressão**  
+         - A dificuldade e a complexidade dos desafios devem aumentar gradualmente.  
+         - Nunca repita informação já descrita em `contextoHistoria`.  
 
-          ### Quando retornar cada atributo como true:
-          - "combat": true → Quando a história levar a um combate iminente ou possível (ex: encontro com inimigos, entrada em dungeon perigosa, etc).
-          - "enemy": true → Sempre que "combat" for true, também retorne "enemy": true.
-          - "weapon": true → Quando o contexto envolver a descoberta, drop ou obtenção de uma arma branca (espada, lança, machado, etc).
-          - "armor": true → Quando o contexto envolver a descoberta, drop ou obtenção de uma armadura (capacete, peitoral, calça, bota).
+      6. **Itens**  
+         - Só armas brancas (espadas, lanças, machados) e armaduras (capacete, peitoral, calça, bota).  
+         - Nunca crie amuletos, anéis ou itens mágicos.
 
-          ### O que cada item pode ser:
-            - Arma branca (espadas, lanças, machados, etc.)
-            - Armadura (capacete, peitoral, calças ou botas)
-            - **Não** crie amuletos, anéis ou itens mágicos.
+      7. **Evite**  
+         - Loops narrativos ou travamentos.  
+         - Respostas fora do formato JSON ou com mais/menos de 3 opções.
 
-          ### importante
-            * Nunca crie mais do que 3 opções para uma resposta. É de extrema importância que isso seja seguido
+      Use este template para cada geração, preenchendo `description`, `options` e os booleanos conforme as regras acima. 
+    """);
 
-          ### Requisitos adicionais:
-            - Nunca repita informações já presentes no contextoHistoria. Por exemplo, se você já mencionou que o jogador chegou em algum lugar, e forneceu detalhes desse lugar, não repita isso no próximo bloco de história.
-            - Sempre forneça ao jogador **liberdade de escolha**, como em um RPG real.
-            - Evite loops ou travamentos narrativos. Prossiga naturalmente.
-        """);
+    Map<String, Object> variables = new HashMap<>();
 
-      Map<String, Object> variables = new HashMap<>();
+    resposta = ContextRepo.listContext();
+    for(int i = 0; i < resposta.size(); i++) {
+      contexto += resposta.get(i);
+    }
 
-      resposta = ContextRepo.listContext();
-      for(int i = 0; i < resposta.size(); i++) {
-        contexto += resposta.get(i);
+    variables.put("contextoHistoria", contexto);
+    variables.put("statusJogador", statusJogador);
+
+    Prompt prompt = promptTemplate.apply(variables);
+
+    final boolean[] loading = {true};
+    Thread loadingThread = new Thread(() -> {
+      String[] loadingStates = {"|", "/", "-", "\\"};
+      int idx = 0;
+      System.out.print("Carregando história ");
+      while (loading[0]) {
+        System.out.print("\rCarregando história " + loadingStates[idx++ % loadingStates.length]);
+        try {
+          Thread.sleep(150);
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+        }
       }
+      System.out.print("\r");
+    });
 
-      variables.put("contextoHistoria", contexto);
-      variables.put("statusJogador", statusJogador);
+    loadingThread.start();
 
-      Prompt prompt = promptTemplate.apply(variables);
-      Response<AiMessage> response = model.generate(prompt.toUserMessage());
+    Response<AiMessage> response = model.generate(prompt.toUserMessage());
 
-      String wrappedJson = response.content().text().trim();
-      wrappedJson = JsonCleaner.clean(wrappedJson);
+    loading[0] = false;
+    try {
+      loadingThread.join();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
 
-      Context c = gson.fromJson(wrappedJson, Context.class);
-      ContextRepo.createContext(c.getDescription());
+    String wrappedJson = response.content().text().trim();
+    wrappedJson = JsonCleaner.clean(wrappedJson);
 
-      return c;
+    Context c = gson.fromJson(wrappedJson, Context.class);
+
+    c.setId(ContextRepo.createContext(c.getDescription()));
+
+    this.description = c.getDescription();
+    this.options = c.getOptions();
+    this.combat = c.getCombat();
+    this.weapon = c.getWeapon();
+    this.armor = c.getArmor();
+
+    return c;
   }
 
   public Weapon createWeapon() {
-    System.out.println("Create weapon foi chamado");
     Gson gson = new Gson();
 
     Player player = PlayerRepo.getPlayer();
@@ -265,7 +408,6 @@ public class Context {
   }
 
   public Armor createArmor() {
-    System.out.println("Create armor foi chamado");
     Gson gson = new Gson();
 
     Player player = PlayerRepo.getPlayer();
@@ -365,7 +507,33 @@ public class Context {
     variables.put("contexto", contexto);
     variables.put("jogador", playerStats);
     Prompt prompt = promptTemplate.apply(variables);
+
+    final boolean[] loading = {true};
+    Thread loadingThread = new Thread(() -> {
+      String[] loadingStates = {"|", "/", "-", "\\"};
+      int idx = 0;
+      System.out.print("Criando Inimigo ");
+      while (loading[0]) {
+        System.out.print("\rCriando Inimigo " + loadingStates[idx++ % loadingStates.length]);
+        try {
+          Thread.sleep(150);
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+        }
+      }
+      System.out.print("\r");
+    });
+
+    loadingThread.start();
+
     Response<AiMessage> response = model.generate(prompt.toUserMessage());
+
+    loading[0] = false;
+    try {
+      loadingThread.join();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
 
     String wrappedJson = response.content().text().trim();
     wrappedJson = JsonCleaner.clean(wrappedJson);
@@ -383,7 +551,7 @@ public class Context {
       genNumbers[i] = -1;
     }
 
-    Context contexto = new Context(null, null, null, null, null);
+    Context contexto = new Context(null, null, null, null, null, 0);
     Player player = PlayerRepo.getPlayer();
 
     float atk = player.getAttack();
@@ -391,56 +559,75 @@ public class Context {
     Scanner scanner = new Scanner(System.in);
 
     System.out.println("Combate!\n\n");
+    
+    for (int i = 0; i < genNumbers.length; i++) {
+      genNumbers[i] = -1;
+    }
+
+    ClearConsole.clearConsole();
+    do {
     enemy.getEnemyStatus(enemy);
 
     int opcao = 0;
     int rng = NumberGenerator.main(100);
 
-    for (int i = 0; i < genNumbers.length; i++) {
-      genNumbers[i] = -1;
-    }
+    System.out.println("\n================== TURNO DO JOGADOR ==================");
+    System.out.printf("O que deseja fazer?\n");
+    System.out.println("[1] - Atacar");
+    System.out.println("======================================================");
+    do { opcao = scanner.nextInt(); } while(opcao != 1);
+    ClearConsole.clearConsole();
 
     atk = player.getAtk();
     if (NumberGenerator.numberVerifier(rng, genNumbers, player.getLck() + 10)) {
       atk *= 2;
-      System.out.println("Dano critico!\n");
+      System.out.println("\n*** GOLPE CRÍTICO! ***");
+      System.out.println(player.getName() + " acerta um golpe devastador!");
     }
     if (atk == player.getAtk()) {
       atk -= ((atk * enemy.getDef()) / 100);
       atk = Verifiers.roundNumbers(atk);
     }
 
+    for (int i = 0; i < genNumbers.length; i++) {
+      genNumbers[i] = -1;
+    }
+
     if (NumberGenerator.numberVerifier(rng, genNumbers, enemy.getDex())) {
-      System.out.println("O inimigo desviou do ataque!");
+      System.out.println("\n>> O inimigo esquivou agilmente do seu ataque!");
     } else {
       enemy.setHp(Verifiers.roundNumbers(enemy.getHp() - atk));
-      System.out.println(player.getName() + " Infligiu " + atk + " de dano ao " + enemy.getName());
+      System.out.println("\n>> " + player.getName() + " infligiu " + atk + " de dano ao " + enemy.getName() + "!");
       EnemyRepo.updateEnemy(enemy);
 
       if (enemy.getHp() <= 0) {
-        System.out.println("O inimigo foi derrotado! Jogador ganhou: " + enemy.getExp() + " de XP\n");
-        player.setExp(enemy.getExp());
-        if (player.getExp() > player.getLevel()) {
-          player.setLevel(player.getLevel() + 1);
-          player.setExp(0);
-          System.out.println(player.getName() + " Subiu para o nível: " + player.getLevel() + "!\n");
+      System.out.println("\n================== VITÓRIA! ==================");
+      System.out.println("O inimigo " + enemy.getName() + " foi derrotado!");
+      System.out.println("Você ganhou " + enemy.getExp() + " de XP.");
+      player.setExp(enemy.getExp());
 
-          player.setNextLevel(player.getNextLevel() * 1.2);
+      if (player.getExp() > player.getLevel()) {
+        player.setLevel(player.getLevel() + 1);
+        player.setExp(0);
+        System.out.println("\n*** " + player.getName() + " subiu para o nível " + player.getLevel() + "! ***");
+        player.setNextLevel(player.getNextLevel() * 1.2);
+        PlayerRepo.updatePlayer(player);
 
-          PlayerRepo.updatePlayer(player);
-        }
+      }
 
-        ContextRepo.createContext("Inimigo: " + enemy.getName() + " Foi derrotado, combate volta a ser FALSE e continue a historia contando como o inimigo morreu e qual é a próxima decisão do jogador");
+      ContextRepo.createContext("Inimigo: " + enemy.getName() + " Foi derrotado, combate volta a ser FALSE e continue a historia contando como o inimigo morreu e qual é a próxima decisão do jogador");
+      contexto.setCombat(false);
+      
 
-        contexto.createContext();
-
-        scanner.close();
-        return true;
+      System.out.println("==============================================\n");
+      return false;
       } else {
-        System.out.println(enemy.getName() + " HP: " + enemy.getHp());
+      System.out.println(enemy.getName() + " HP restante: " + enemy.getHp());
       }
     }
 
+    // TURNO DO INIMIGO
+    System.out.println("\n================== TURNO DO INIMIGO ==================");
     if (enemyAtk == enemy.getAtk()) {
       enemyAtk -= ((enemyAtk * player.getTotalDefense()) / 100);
       enemyAtk = Verifiers.roundNumbers(enemyAtk);
@@ -450,28 +637,101 @@ public class Context {
     }
 
     if (NumberGenerator.numberVerifier(rng, genNumbers, player.getDex())) {
-      System.out.println("O jogador desviou do ataque!");
+      System.out.println(">> Você esquivou do ataque do inimigo!");
     } else {
-      System.out.println("O " + enemy.getName() + "  infligiu " + enemyAtk + " de dano ao jogador");
+      System.out.println(">> " + enemy.getName() + " ataca e inflige " + enemyAtk + " de dano em você!");
       player.setHp(Verifiers.roundNumbers(player.getHp() - enemyAtk));
       PlayerRepo.updatePlayer(player);
     }
 
     if (player.getHp() <= 0) {
-      System.out.println("Voce perdeu, ruim demais");
+      System.out.println("\n================== DERROTA ==================");
+      System.out.println("Você foi derrotado por " + enemy.getName() + "...");
       contexto.setCombat(false);
-      ContextRepo.createContext("Jogador: " + player.getName() + " Foi derrotado, finalize a história demonstrando como o jogador morreu para o inimigo: " + enemy.getName() + " que possuia a arma: " + enemy.getWeapon());
+      ContextRepo.createContext("Jogador: " + player.getName() + " Foi derrotado, finalize a história demonstrando como o jogador morreu para o inimigo: " + enemy.getName() + " que possuía a arma: " + enemy.getWeapon());
 
+      contexto.setCombat(false);
       contexto.createContext();
 
-      System.out.println(contexto.getDescription());
-
-      scanner.close();
+      System.out.println(getDescription());
+      System.out.println("=============================================\n");
       return true;
     }
-    System.out.println(player.getName() + "HP: " + player.getHp());
+    System.out.println("\nStatus atual:");
+    System.out.println(player.getName() + " HP: " + player.getHp());
+    System.out.println(enemy.getName() + " HP: " + enemy.getHp());
+    System.out.println("======================================================\n");
+
+    } while (PlayerRepo.getPlayer().getHp() > 0 && EnemyRepo.getEnemy(enemy.getId()).getHp() > 0);
 
     return false;
+  }
+
+  public void startGame() {
+    int opcao = 0;
+
+    // MENU DO JOGO
+    do {
+      ClearConsole.clearConsole();
+
+      System.out.println("╔══════════════════════════════════════════════╗");
+      System.out.println("║           \u001B[35mRPG de Terminal\u001B[0m                    ║");
+      System.out.println("╠══════════════════════════════════════════════╣");
+      System.out.println("║ [1] - \u001B[32mComeçar jogo\u001B[0m                           ║");
+      System.out.println("║ [2] - \u001B[36mSobre\u001B[0m                                  ║");
+      System.out.println("║ [3] - \u001B[31mFinalizar\u001B[0m                              ║");
+      System.out.println("╚══════════════════════════════════════════════╝");
+      System.out.print("Escolha uma opção: ");
+      opcao = scanner.nextInt();
+
+      switch (opcao) {
+        case (2):
+          ClearConsole.clearConsole();
+          System.out.println("╔══════════════════════════════════════════════╗");
+          System.out.println("║                \u001B[36mCriadores\u001B[0m                     ║");
+          System.out.println("╠══════════════════════════════════════════════╣");
+          System.out.println("║  - Victor Schneider                          ║");
+          System.out.println("║  - Allan Slomski                             ║");
+          System.out.println("║  - Eduardo Doli                              ║");
+          System.out.println("╚══════════════════════════════════════════════╝");
+          System.out.println("\n[Aperte qualquer tecla para voltar]");
+          scanner.next();
+        break;
+
+        case (3):
+          return;
+      }
+      if(opcao < 1 || opcao > 3) {
+        System.out.println("\u001B[31mOpção inválida, digite novamente!\u001B[0m\n");
+      }
+    } while (opcao != 1);
+
+    // Criação do personagem
+    String name;
+
+    ClearConsole.clearConsole();
+    System.out.println("╔══════════════════════════════════════════════╗");
+    System.out.println("║         \u001B[33mCriação do Personagem\u001B[0m                ║");
+    System.out.println("╚══════════════════════════════════════════════╝");
+    System.out.print("Digite o nome do personagem: ");
+    name = scanner.next();
+
+    Player player = new Player(name, 100, 5, 2, 90, 5, 1, 0, 20, 1);
+    PlayerRepo.createPlayer(player);
+
+    Armor helmet = new Armor("Capacete de ferro", Slot.HELMET, 10, 0, true, "ARMOR");
+    PlayerInvRepo.createArmor(helmet);
+    player.equipArmor(helmet);
+
+    Weapon espada = new Weapon(5, "Espada de ferro", true, 1, "WEAPON");
+    PlayerInvRepo.createWeapon(espada);
+    player.equipWeapon(espada);
+
+    // Contexto inicial
+    System.out.println("\n\u001B[34mBem-vindo ao mundo de aventuras, " + name + "!\u001B[0m");
+    System.out.println("Sua jornada está prestes a começar...\n");
+    try { Thread.sleep(1500); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+    createContext();
   }
 
 }

@@ -30,7 +30,7 @@ public class BattleController {
   }
 
   public static void turn (Context ctx) {
-    Model.Context context = new Model.Context(null, null, null, null, null);
+    Model.Context context = new Model.Context(null, null, null, null, null, 0);
     String wrappedJson = "";
     Map<String, ContextUpdateDTO> contextResponse;
 
