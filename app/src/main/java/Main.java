@@ -44,7 +44,6 @@ public class Main {
         RouteConfig.registerRoutes(app);
         app.start(7070);
 
-        
         /*
          * TODO
          * 6 - Refatorar os arquivos de Manegement, Combat e Inventory para se adequar à orientação a objetos
