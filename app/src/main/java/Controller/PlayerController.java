@@ -12,8 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.checkerframework.checker.units.qual.s;
+
 import com.google.gson.Gson;
 
+import Controller.dto.NewPlayerDto;
+import Controller.dto.PlayerAttributes;
+import Controller.dto.PlayerData;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -22,6 +27,7 @@ public class PlayerController {
   private static final Gson gson = new Gson();
 
   public static void registerRoutes(Javalin app) {
+    app.get("/players/test", PlayerController::getPlayerDto);
     app.get("/players", PlayerController::getPlayer);
     app.post("/players", PlayerController::createPlayer);
     app.patch("/players", PlayerController::updatePlayer);
@@ -37,8 +43,12 @@ public class PlayerController {
     ctx.status(200).result("Player Created");
   }
 
+  public static void getPlayerDto(Context ctx) {
+    ctx.status(200).result(gson.toJson(new NewPlayerDto(new PlayerData(new PlayerAttributes("nominho", 12)))));
+  }
+
   public static void getPlayer(Context ctx) {
-    Player data = PlayerRepo.getPlayer();
+    Player playerData = PlayerRepo.getPlayer();
     WeaponDTO weaponDTO = new WeaponDTO();
     List<WeaponDTO> weaponList = new ArrayList<>();
 
@@ -52,19 +62,20 @@ public class PlayerController {
     weaponList.add(weaponDTO);
 
     PlayerDTO player = new PlayerDTO();
-    player.setName(data.getName());
-    player.setHp(data.getHp());
-    player.setAtk(data.getAtk());
-    player.setDef(data.getDef());
-    player.setDex(data.getDex());
-    player.setLck(data.getLck());
-    player.setLevel(data.getLevel());
-    player.setExp(data.getExp());
-    player.setNextLevel(data.getNextLevel());
+    player.setName(playerData.getName());
+    player.setHp(playerData.getHp());
+    player.setAtk(playerData.getAtk());
+    player.setDef(playerData.getDef());
+    player.setDex(playerData.getDex());
+    player.setLck(playerData.getLck());
+    player.setLevel(playerData.getLevel());
+    player.setExp(playerData.getExp());
+    player.setNextLevel(playerData.getNextLevel());
     player.setEquippedWeapon(weaponList);
     player.setEquippedArmor(PlayerInvRepo.listEquippedArmor());
 
-    Map<String, PlayerDTO> response = Map.of("player", player);
+    Map<String, PlayerDTO> attributes = Map.of("attributes", player);
+    Map<String, Map<String, PlayerDTO>> data = Map.of("data", attributes);
 
 
     if(player == null) {
@@ -72,7 +83,7 @@ public class PlayerController {
       return;
     }
 
-    ctx.status(200).result(gson.toJson(response));
+    ctx.status(200).result(gson.toJson(data));
   }
 
   public static void updatePlayer(Context ctx) {
