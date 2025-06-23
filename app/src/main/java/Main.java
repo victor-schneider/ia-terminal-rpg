@@ -1,31 +1,31 @@
 // Importação dos Util
 import java.util.Scanner;
-import java.util.logging.ErrorManager;
-import java.util.random.RandomGenerator;
+// import java.util.logging.ErrorManager;
+// import java.util.random.RandomGenerator;
 
 // Importação dos Schemas do DB
 import Migration.EnemiesSchema;
 import Migration.PlayerInvSchema;
 import Migration.PlayerSchema;
 import Model.Context;
-import Model.Enemy;
-import Model.PlayerComponents.*;
-import Model.PlayerComponents.Armor.Slot;
-import Repository.ContextRepo;
-import Repository.EnemyRepo;
-import Repository.PlayerInvRepo;
-import Repository.PlayerRepo;
+// import Model.Enemy;
+// import Model.PlayerComponents.*;
+// import Model.PlayerComponents.Armor.Slot;
+// import Repository.ContextRepo;
+// import Repository.EnemyRepo;
+// import Repository.PlayerInvRepo;
+// import Repository.PlayerRepo;
 import Migration.ContextSchema;
 
 // Importação das classes Utils
-import Utils.NumberGenerator;
+// import Utils.NumberGenerator;
 import Utils.ClearConsole;
-import Utils.Verifiers;
-import Utils.NumberGenerator;
+// import Utils.Verifiers;
+// import Utils.NumberGenerator;
 
-import io.javalin.Javalin;
-import io.javalin.http.staticfiles.Location;
-import io.javalin.json.JavalinJackson;
+// import io.javalin.Javalin;
+// import io.javalin.http.staticfiles.Location;
+// import io.javalin.json.JavalinJackson;
 
 public class Main {
      public static void main(String[] args) {
@@ -49,7 +49,7 @@ public class Main {
 
         do {
             // Se quiser triggar combate descomente o codigo abaixo
-            // context.setCombat(false);
+            context.setCombat(true);
             ClearConsole.clearConsole();
             context.displayDescription();
             if(context.displayOptions()) finalizar = true;

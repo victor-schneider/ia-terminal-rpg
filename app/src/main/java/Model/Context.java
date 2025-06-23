@@ -9,6 +9,11 @@ import java.util.ArrayList;
 import com.google.gson.Gson;
 
 import Model.Context;
+import Model.Combat.CombatHandler;
+import Model.Combat.CombatVerifier;
+import Model.Combat.EnemyAttackHandler;
+import Model.Combat.PlayerAttackHandler;
+import Model.Combat.VictoryCheckHandler;
 import Model.PlayerComponents.Armor;
 import Model.PlayerComponents.Armor.Slot;
 import Model.PlayerComponents.Item;
@@ -546,123 +551,49 @@ public class Context {
   }
 
   public Boolean combat(Enemy enemy) {
-    int[] genNumbers = new int[100];
-    for (int i = 0; i < genNumbers.length; i++) {
-      genNumbers[i] = -1;
-    }
+      Context contexto = new Context(null, null, null, null, null, 0);
+      Player player = PlayerRepo.getPlayer();
+      CombatVerifier combatVerifier = new CombatVerifier();
+      Boolean resultado;
 
-    Context contexto = new Context(null, null, null, null, null, 0);
-    Player player = PlayerRepo.getPlayer();
+      Scanner scanner = new Scanner(System.in);
 
-    float atk = player.getAttack();
-    float enemyAtk = enemy.getAtk();
-    Scanner scanner = new Scanner(System.in);
+      System.out.println("Combate!\n\n");
+      ClearConsole.clearConsole();
+      do {
+        int opcao = 0;
 
-    System.out.println("Combate!\n\n");
-    
-    for (int i = 0; i < genNumbers.length; i++) {
-      genNumbers[i] = -1;
-    }
+        System.out.println("\n================== TURNO DO JOGADOR ==================");
+        System.out.printf("O que deseja fazer?\n");
+        System.out.println("[1] - Atacar");
+        System.out.println("======================================================");
+        opcao = scanner.nextInt();
 
-    ClearConsole.clearConsole();
-    do {
-    enemy.getEnemyStatus(enemy);
+        if(opcao == 1) {
+          CombatHandler playerAttack = new PlayerAttackHandler();
+          CombatHandler enemyAttack = new EnemyAttackHandler();
+          CombatHandler victoryCheck = new VictoryCheckHandler();
 
-    int opcao = 0;
-    int rng = NumberGenerator.main(100);
+          playerAttack.setNext(enemyAttack);
+          enemyAttack.setNext(victoryCheck);
 
-    System.out.println("\n================== TURNO DO JOGADOR ==================");
-    System.out.printf("O que deseja fazer?\n");
-    System.out.println("[1] - Atacar");
-    System.out.println("======================================================");
-    do { opcao = scanner.nextInt(); } while(opcao != 1);
-    ClearConsole.clearConsole();
+          playerAttack.handle(contexto, enemy, player, combatVerifier);
+        }
 
-    atk = player.getAtk();
-    if (NumberGenerator.numberVerifier(rng, genNumbers, player.getLck() + 10)) {
-      atk *= 2;
-      System.out.println("\n*** GOLPE CRÍTICO! ***");
-      System.out.println(player.getName() + " acerta um golpe devastador!");
-    }
-    if (atk == player.getAtk()) {
-      atk -= ((atk * enemy.getDef()) / 100);
-      atk = Verifiers.roundNumbers(atk);
-    }
+        if (combatVerifier.playerWon) {
+          return false;
+        } else if (combatVerifier.enemyWon) {
+          return true;
+        }
 
-    for (int i = 0; i < genNumbers.length; i++) {
-      genNumbers[i] = -1;
-    }
+        System.out.println(enemy.getName() + " HP restante: " + enemy.getHp());
 
-    if (NumberGenerator.numberVerifier(rng, genNumbers, enemy.getDex())) {
-      System.out.println("\n>> O inimigo esquivou agilmente do seu ataque!");
-    } else {
-      enemy.setHp(Verifiers.roundNumbers(enemy.getHp() - atk));
-      System.out.println("\n>> " + player.getName() + " infligiu " + atk + " de dano ao " + enemy.getName() + "!");
-      EnemyRepo.updateEnemy(enemy);
+        System.out.println("\nStatus atual:");
+        System.out.println(player.getName() + " HP: " + player.getHp());
+        System.out.println(enemy.getName() + " HP: " + enemy.getHp());
+        System.out.println("======================================================\n");
 
-      if (enemy.getHp() <= 0) {
-      System.out.println("\n================== VITÓRIA! ==================");
-      System.out.println("O inimigo " + enemy.getName() + " foi derrotado!");
-      System.out.println("Você ganhou " + enemy.getExp() + " de XP.");
-      player.setExp(enemy.getExp());
-
-      if (player.getExp() > player.getLevel()) {
-        player.setLevel(player.getLevel() + 1);
-        player.setExp(0);
-        System.out.println("\n*** " + player.getName() + " subiu para o nível " + player.getLevel() + "! ***");
-        player.setNextLevel(player.getNextLevel() * 1.2);
-        PlayerRepo.updatePlayer(player);
-
-      }
-
-      ContextRepo.createContext("Inimigo: " + enemy.getName() + " Foi derrotado, combate volta a ser FALSE e continue a historia contando como o inimigo morreu e qual é a próxima decisão do jogador");
-      contexto.setCombat(false);
-      
-
-      System.out.println("==============================================\n");
-      return false;
-      } else {
-      System.out.println(enemy.getName() + " HP restante: " + enemy.getHp());
-      }
-    }
-
-    // TURNO DO INIMIGO
-    System.out.println("\n================== TURNO DO INIMIGO ==================");
-    if (enemyAtk == enemy.getAtk()) {
-      enemyAtk -= ((enemyAtk * player.getTotalDefense()) / 100);
-      enemyAtk = Verifiers.roundNumbers(enemyAtk);
-    }
-    for (int i = 0; i < genNumbers.length; i++) {
-      genNumbers[i] = -1;
-    }
-
-    if (NumberGenerator.numberVerifier(rng, genNumbers, player.getDex())) {
-      System.out.println(">> Você esquivou do ataque do inimigo!");
-    } else {
-      System.out.println(">> " + enemy.getName() + " ataca e inflige " + enemyAtk + " de dano em você!");
-      player.setHp(Verifiers.roundNumbers(player.getHp() - enemyAtk));
-      PlayerRepo.updatePlayer(player);
-    }
-
-    if (player.getHp() <= 0) {
-      System.out.println("\n================== DERROTA ==================");
-      System.out.println("Você foi derrotado por " + enemy.getName() + "...");
-      contexto.setCombat(false);
-      ContextRepo.createContext("Jogador: " + player.getName() + " Foi derrotado, finalize a história demonstrando como o jogador morreu para o inimigo: " + enemy.getName() + " que possuía a arma: " + enemy.getWeapon());
-
-      contexto.setCombat(false);
-      contexto.createContext();
-
-      System.out.println(getDescription());
-      System.out.println("=============================================\n");
-      return true;
-    }
-    System.out.println("\nStatus atual:");
-    System.out.println(player.getName() + " HP: " + player.getHp());
-    System.out.println(enemy.getName() + " HP: " + enemy.getHp());
-    System.out.println("======================================================\n");
-
-    } while (PlayerRepo.getPlayer().getHp() > 0 && EnemyRepo.getEnemy(enemy.getId()).getHp() > 0);
+      } while (combatVerifier.enemyWon == false && combatVerifier.playerWon == false);
 
     return false;
   }
